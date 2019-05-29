@@ -47,7 +47,7 @@ appearance:
 # Sidebar profile
 profile:
   # `email` will fallback to `hexo.config.email` if not specified
-  email:
+  email: milkrong121@outlook.com
 
   # Avatar URL, email address will be used for gravatar(https://en.gravatar.com) avatar if not specified.
   # avatar:
@@ -58,8 +58,8 @@ profile:
 menu:
   Home: /
   # About: /about
-  # Links: /links
-  # Github: https://github.com/username
+  Links: https://www.linkedin.com/in/rongkailiu/
+  Github: https://github.com/milkrong
 
 # Sidebar social media
 # Try to sort by changing the order of the keys
@@ -77,7 +77,7 @@ sns:
   telegram:
   youtube:
   hangouts:
-  linkedin:
+  linkedin: https://www.linkedin.com/in/rongkailiu/
   pinterest:
   soundcloud:
   myspace:
