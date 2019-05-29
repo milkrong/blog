@@ -39,6 +39,7 @@ Start Coding now
 
 The main.dart file is the main entry that Flutter compiler can compile our project. The Flutter app is composed of components or widgets. We can name it `MyAPP()`.
 
+```
     import 'package:flutter/material.dart';
     
     void main() => runApp(MyApp());
@@ -59,6 +60,7 @@ The main.dart file is the main entry that Flutter compiler can compile our proje
         );
       }
     }
+```
 
 We import the material library to get material styled widgets to implement in our application. Then we using the main() function to set the entry. Myapp is a class that extends from StatelessWidget, which we won't change any state in that widget.
 
