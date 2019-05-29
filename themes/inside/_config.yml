@@ -68,9 +68,9 @@ sns:
   email:
   # `feed` will fallback to `hexo.config.feed.path` if not specified
   feed:
-  github:
+  github: 
   twitter:
-  facebook:
+  facebook: 
   instagram:
   tumblr:
   dribbble:
@@ -78,10 +78,10 @@ sns:
   youtube:
   hangouts:
   linkedin: https://www.linkedin.com/in/rongkailiu/
-  pinterest:
+  pinterest: 
   soundcloud:
   myspace:
-  weibo:
+  weibo: https://www.weibo.com/1931814991/
   qq:
 
 # Sidebar footer
@@ -93,11 +93,11 @@ footer:
   # powered: false
 
   # Set to false to hide theme link.
-  # theme: false
+  theme: false
 
   # Custom text.
-  # custom: Hosted by <a target="_blank" rel="noopener"
-  #   href="https://pages.coding.me"><b>Coding Pages</b></a>
+  custom: Hosted by <a target="_blank" rel="noopener"
+     href="https://www.netlify.com/"><b>Netlify</b></a>
 
 
 # ---------------------------------------------------------------
@@ -110,10 +110,10 @@ page:
   # toc: false
 
   # Display reward, default to `false`
-  # reward: true
+  reward: true
 
   # Display copyright notice, default to `false`
-  # copyright: true
+  copyright: true
 
 
 # Post
@@ -124,10 +124,10 @@ post:
   # toc: false
 
   # Display reward, default to `false`
-  # reward: true
+  reward: true
 
   # Display copyright notice, default to `false`
-  # copyright: true
+  copyright: true
 
 # Archive
 archive:
@@ -211,17 +211,15 @@ toc:
 # Reward
 reward:
   # Text which shows at the top.
-  # text: Buy me a cup of coffee ☕.
+  text: Buy me a cup of coffee ☕.
 
   # Payment Methods
   # qrcode, url and text must be set at least one
   # wechat, alipay, paypal and bitcoin has built-in icon and color themes,
   # use `name` to apply
-  # methods:
-  #   - name: paypal
-  #     qrcode: paypal.jpg
-  #     url: https://paypal.me/imelmore
-  #     text: This is a paypal payment link
+  methods:
+     - name: paypal
+       qrcode: https://i.imgur.com/rNMEXqm.png
 
 # Copyright notice
 # It is possible to use front matter `copyright` to override this setting.
