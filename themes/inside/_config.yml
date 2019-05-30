@@ -52,7 +52,7 @@ profile:
   # Avatar URL, email address will be used for gravatar(https://en.gravatar.com) avatar if not specified.
   # avatar:
 
-  bio: Awesome guy.
+  bio: 'Truth can only be found in one place: the code.'
 
 # Sidebar menu
 menu:
