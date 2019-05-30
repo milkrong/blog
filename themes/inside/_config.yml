@@ -247,8 +247,8 @@ copyright:
 # Built-in support Disqus (https://disqus.com) and LiveRe (https://livere.com),
 # for other comment system, see plugins
 comments:
-  # disqus:
-  #   shortname: disqus_shortname
+  disqus:
+    shortname: disqus_Mnpo1rR5zV
   #   # Or you can set disqus script URL directly
   #   script: //disqus_shortname.disqus.com/embed.js
   #   # Autoload, default to `true`, set to `false` to display a button
