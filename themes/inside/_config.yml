@@ -35,7 +35,7 @@ appearance:
     # Sidebar author name, fallback to `base`
     logo:
     # Sidebar menu font, fallback to `base`
-    menu: 'Baloo Bhaijaan'
+    menu: "Baloo Bhaijaan"
     # Percentage on the fab button, month text on archives page, count, pager, toc index and category pill,
     # fallback to `base`
     label: Montserrat
@@ -52,12 +52,12 @@ profile:
   # Avatar URL, email address will be used for gravatar(https://en.gravatar.com) avatar if not specified.
   # avatar:
 
-  bio: 'Truth can only be found in one place: the code.'
+  bio: "Truth can only be found in one place: the code."
 
 # Sidebar menu
 menu:
   Home: /
-  # About: /about
+  About: /about
   Github: https://github.com/milkrong
 
 # Sidebar social media
@@ -67,16 +67,16 @@ sns:
   email:
   # `feed` will fallback to `hexo.config.feed.path` if not specified
   feed:
-  github: 
+  github:
   twitter:
-  facebook: 
+  facebook:
   instagram:
   tumblr:
   dribbble:
   telegram:
   youtube:
   hangouts:
-  pinterest: 
+  pinterest:
   soundcloud:
   myspace:
   weibo: https://www.weibo.com/1931814991/
@@ -91,12 +91,11 @@ footer:
   # powered: false
 
   # Set to false to hide theme link.
-  theme: false
+  theme: true
 
   # Custom text.
   custom: Hosted by <a target="_blank" rel="noopener"
-     href="https://www.netlify.com/"><b>Netlify</b></a>
-
+    href="https://www.netlify.com/"><b>Netlify</b></a>
 
 # ---------------------------------------------------------------
 # Content
@@ -113,10 +112,9 @@ page:
   # Display copyright notice, default to `false`
   copyright: true
 
-
 # Post
 post:
-  # per_page: 10
+  per_page: 10
 
   # Display Table of content, default to `true`
   # toc: false
@@ -143,10 +141,8 @@ category:
 search:
   # Display a quick search button in fab
   # fab: true
-
   # Render a standalone searh page which can be configured in sidebar menu such as `Search: /search`
   # page: true
-
   # Local search
   # adapter:
   #   range:
@@ -154,7 +150,6 @@ search:
   #     - page
   #   per_page: 20
   #   limit: 10000
-
   # Custom search
   # adapter:
   #   # Used for pagination
@@ -186,7 +181,6 @@ search:
   #     # Used to retrieve content from per hit
   #     content: _snippetResult.content.value
 
-
 # ---------------------------------------------------------------
 # Content addons
 # ---------------------------------------------------------------
@@ -202,7 +196,6 @@ assets:
 toc:
   # The depth of toc, default to `3`, maximum to `4`.
   # depth: 3
-
   # Showing index before title, eg. 1.1 title, default to `true`
   # index: true
 
@@ -216,8 +209,8 @@ reward:
   # wechat, alipay, paypal and bitcoin has built-in icon and color themes,
   # use `name` to apply
   methods:
-     - name: paypal
-       qrcode: https://i.imgur.com/rNMEXqm.png
+    - name: paypal
+      qrcode: https://i.imgur.com/rNMEXqm.png
 
 # Copyright notice
 # It is possible to use front matter `copyright` to override this setting.
@@ -251,14 +244,12 @@ comments:
   #   script: //disqus_shortname.disqus.com/embed.js
   #   # Autoload, default to `true`, set to `false` to display a button
   #   autoload: false
-
   # livere:
   #   uid: livere_uid
   #   # LiveRe script, default to `https://cdn-city.livere.com/js/embed.dist.js`
   #   script:
   #   # Autoload, default to `true`, set to `false` to display a button
   #   autoload: false
-
 
 # ---------------------------------------------------------------
 # Misc
@@ -320,7 +311,6 @@ pwa:
   #     - name: json
   #       strategy: cacheFirst
   #       regex: your_data_prefix/.*\\.json
-
   # manifest.json
   # manifest:
   #   short_name:
