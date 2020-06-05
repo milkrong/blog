@@ -2,8 +2,8 @@
 title: Flutter Learning Notes 1
 date: 2019-09-16 20:28:36
 tags: 
-	- Application
-	- Flutter
+  - Application
+  - Flutter
 categories:
   - Flutter
   - Software Development
