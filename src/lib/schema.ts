@@ -5,8 +5,23 @@ import {
   timestamp,
   integer,
   primaryKey,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+// relations import removed (temporarily not using drizzle relations helpers)
+// Added users table for authentication
+
+export const users = pgTable(
+  "users",
+  {
+    id: serial("id").primaryKey(),
+    email: text("email").notNull(),
+    passwordHash: text("password_hash").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (t) => ({
+    emailUnique: uniqueIndex("users_email_unique").on(t.email),
+  })
+);
 
 export const categories = pgTable("categories", {
   id: serial("id").primaryKey(),
@@ -41,34 +56,9 @@ export const postsToTags = pgTable(
   })
 );
 
-export const postsRelations = relations(posts, ({ one, many }) => ({
-  category: one(categories, {
-    fields: [posts.categoryId],
-    references: [categories.id],
-  }),
-  tags: many(postsToTags),
-}));
-
-export const categoriesRelations = relations(categories, ({ many }) => ({
-  posts: many(posts),
-}));
-
-export const tagsRelations = relations(tags, ({ many }) => ({
-  postsToTags: many(postsToTags),
-}));
-
-export const postsToTagsRelations = relations(postsToTags, ({ one }) => ({
-  post: one(posts, {
-    fields: [postsToTags.postId],
-    references: [posts.id],
-  }),
-  tag: one(tags, {
-    fields: [postsToTags.tagId],
-    references: [tags.id],
-  }),
-}));
-
 export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;
 export type Category = typeof categories.$inferSelect;
 export type Tag = typeof tags.$inferSelect;
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
