@@ -21,3 +21,20 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
 
 These variables are loaded by Next.js during build and runtime.
+
+### Database Migrations
+
+Drizzle ORM is used to manage the `posts` table schema. To generate and push migrations to your Supabase instance, first set `SUPABASE_DB_URL` to the service-role connection string provided by Supabase:
+
+```
+export SUPABASE_DB_URL="postgresql://postgres:password@host:5432/postgres?sslmode=require"
+```
+
+Then run the migration commands:
+
+```
+npm run db:generate
+npm run db:push
+```
+
+The generated SQL files will be placed in the `drizzle` directory.
