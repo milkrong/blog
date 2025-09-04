@@ -16,7 +16,14 @@
     "remark": "^15.0.0",
     "remark-html": "^16.0.1",
     "@tiptap/react": "^2.6.6",
-    "@tiptap/starter-kit": "^2.6.6"
+    "@tiptap/starter-kit": "^2.6.6",
+    "@tanstack/react-query": "^5.0.0",
+    "@trpc/client": "^10.45.0",
+    "@trpc/react-query": "^10.45.0",
+    "@trpc/server": "^10.45.0",
+    "@supabase/supabase-js": "^2.42.0",
+    "drizzle-orm": "^0.31.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
