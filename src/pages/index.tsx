@@ -1,6 +1,7 @@
-import Link from 'next/link';
 import { GetStaticProps } from 'next';
 import { getAllPosts } from '../lib/posts';
+import Layout from '../components/Layout';
+import ArticleCard from '../components/ArticleCard';
 
 type Post = {
   slug: string;
@@ -13,17 +14,12 @@ interface Props {
 
 export default function Home({ posts }: Props) {
   return (
-    <main>
-      <h1>Blog Posts</h1>
-      <ul>
-        {posts.map(({ slug, frontMatter }) => (
-          <li key={slug}>
-            <Link href={`/posts/${slug}`}>{frontMatter.title}</Link>
-            {frontMatter.description && <p>{frontMatter.description}</p>}
-          </li>
-        ))}
-      </ul>
-    </main>
+    <Layout>
+      <h1 className="text-2xl font-bold mb-4">Blog Posts</h1>
+      {posts.map((post) => (
+        <ArticleCard key={post.slug} slug={post.slug} frontMatter={post.frontMatter} />
+      ))}
+    </Layout>
   );
 }
 
