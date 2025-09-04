@@ -1,5 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { getPostSlugs, getPostBySlug } from '../../lib/posts';
+import Layout from '../../components/Layout';
+import Tag from '../../components/Tag';
 
 type Props = {
   post: {
@@ -11,10 +13,19 @@ type Props = {
 
 export default function PostPage({ post }: Props) {
   return (
-    <article>
-      <h1>{post.frontMatter.title}</h1>
-      <div dangerouslySetInnerHTML={{ __html: post.content }} />
-    </article>
+    <Layout>
+      <article>
+        <h1 className="text-3xl font-bold mb-4">{post.frontMatter.title}</h1>
+        {post.frontMatter.tags && (
+          <div className="mb-4">
+            {post.frontMatter.tags.map((tag: string) => (
+              <Tag key={tag} tag={tag} />
+            ))}
+          </div>
+        )}
+        <div dangerouslySetInnerHTML={{ __html: post.content }} />
+      </article>
+    </Layout>
   );
 }
 
