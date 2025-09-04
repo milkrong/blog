@@ -1,33 +1,40 @@
-import { pgTable, serial, text, timestamp, integer, primaryKey } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
+import {
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  integer,
+  primaryKey,
+} from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
-export const categories = pgTable('categories', {
-  id: serial('id').primaryKey(),
-  name: text('name').notNull(),
-  slug: text('slug').notNull(),
+export const categories = pgTable("categories", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull(),
 });
 
-export const tags = pgTable('tags', {
-  id: serial('id').primaryKey(),
-  name: text('name').notNull(),
-  slug: text('slug').notNull(),
+export const tags = pgTable("tags", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull(),
 });
 
-export const posts = pgTable('posts', {
-  id: serial('id').primaryKey(),
-  slug: text('slug').notNull(),
-  title: text('title').notNull(),
-  description: text('description'),
-  content: text('content'),
-  createdAt: timestamp('created_at').defaultNow(),
-  categoryId: integer('category_id').references(() => categories.id),
+export const posts = pgTable("posts", {
+  id: serial("id").primaryKey(),
+  slug: text("slug").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  content: text("content"),
+  createdAt: timestamp("created_at").defaultNow(),
+  categoryId: integer("category_id").references(() => categories.id),
 });
 
 export const postsToTags = pgTable(
-  'posts_to_tags',
+  "posts_to_tags",
   {
-    postId: integer('post_id').references(() => posts.id),
-    tagId: integer('tag_id').references(() => tags.id),
+    postId: integer("post_id").references(() => posts.id),
+    tagId: integer("tag_id").references(() => tags.id),
   },
   (t) => ({
     pk: primaryKey(t.postId, t.tagId),

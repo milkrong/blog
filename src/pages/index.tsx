@@ -1,6 +1,6 @@
-import Layout from '../components/Layout';
-import ArticleCard from '../components/ArticleCard';
-import { trpc } from '../utils/trpc';
+import Layout from "../components/Layout";
+import ArticleCard from "../components/ArticleCard";
+import { trpc } from "../utils/trpc";
 
 export default function Home() {
   const { data: posts } = trpc.posts.useQuery();

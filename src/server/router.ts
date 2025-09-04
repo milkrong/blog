@@ -1,12 +1,14 @@
-import { initTRPC } from '@trpc/server';
-import { db } from '../lib/db';
-import { Post, Category, Tag } from '../lib/schema';
+import { initTRPC } from "@trpc/server";
+import { db } from "../lib/db";
+import { Post, Category, Tag } from "../lib/schema";
 
 const t = initTRPC.create();
 
 export const appRouter = t.router({
   posts: t.procedure.query(
-    async (): Promise<(Post & { category: Category | null; tags: Tag[] })[]> => {
+    async (): Promise<
+      (Post & { category: Category | null; tags: Tag[] })[]
+    > => {
       const rows = await db.query.posts.findMany({
         with: {
           category: true,
