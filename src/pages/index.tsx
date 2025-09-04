@@ -1,33 +1,25 @@
-import { GetStaticProps } from 'next';
-import { getAllPosts } from '../lib/posts';
 import Layout from '../components/Layout';
 import ArticleCard from '../components/ArticleCard';
+import { trpc } from '../utils/trpc';
 
-type Post = {
-  slug: string;
-  frontMatter: Record<string, any>;
-};
+export default function Home() {
+  const { data: posts } = trpc.posts.useQuery();
 
-interface Props {
-  posts: Post[];
-}
-
-export default function Home({ posts }: Props) {
   return (
     <Layout>
       <h1 className="text-2xl font-bold mb-4">Blog Posts</h1>
-      {posts.map((post) => (
-        <ArticleCard key={post.slug} slug={post.slug} frontMatter={post.frontMatter} />
+      {posts?.map((post) => (
+        <ArticleCard
+          key={post.id}
+          slug={post.slug}
+          frontMatter={{
+            title: post.title,
+            description: post.description,
+            category: post.category?.name,
+            tags: post.tags?.map((t) => t.name),
+          }}
+        />
       ))}
     </Layout>
   );
 }
-
-export const getStaticProps: GetStaticProps<Props> = async () => {
-  const posts = getAllPosts();
-  return {
-    props: {
-      posts,
-    },
-  };
-};
