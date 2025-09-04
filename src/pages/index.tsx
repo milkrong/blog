@@ -1,6 +1,6 @@
-import Layout from '../components/Layout';
-import ArticleCard from '../components/ArticleCard';
-import { trpc } from '../utils/trpc';
+import Layout from "../components/Layout";
+import ArticleCard from "../components/ArticleCard";
+import { trpc } from "../utils/trpc";
 
 export default function Home() {
   const { data: posts } = trpc.posts.useQuery();
@@ -12,7 +12,12 @@ export default function Home() {
         <ArticleCard
           key={post.id}
           slug={post.slug}
-          frontMatter={{ title: post.title, description: post.description }}
+          frontMatter={{
+            title: post.title,
+            description: post.description,
+            category: post.category?.name,
+            tags: post.tags?.map((t) => t.name),
+          }}
         />
       ))}
     </Layout>

@@ -18,6 +18,7 @@ Create a `.env` file in the project root or define variables in `docker-compose.
 NEXT_PUBLIC_ANALYTICS_ID=your-id
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_DB_URL=postgresql://postgres:password@host:5432/postgres?sslmode=require
 ```
 
 These variables are loaded by Next.js during build and runtime.
