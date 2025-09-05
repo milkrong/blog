@@ -2,7 +2,5 @@ version: "3.9"
 services:
   web:
     build: .
-    ports:
-      - "3000:3000"
     environment:
       - SUPABASE_DB_URL=${SUPABASE_DB_URL}
