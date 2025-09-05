@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { PixelButton } from "./PixelButton";
 
 interface ProfileHeaderProps {
   name?: string;
@@ -22,35 +22,51 @@ export function ProfileHeader({
   company = "Your Company",
 }: ProfileHeaderProps) {
   return (
-    <section className="mb-10 rounded-xl border bg-card text-card-foreground p-6 md:p-8 flex flex-col md:flex-row gap-6">
+    <section className="mb-10 bg-white border-4 border-gray-800 shadow-[6px_6px_0_0_#1f2937] p-6 md:p-8 flex flex-col md:flex-row gap-6 font-mono">
       <div className="flex-shrink-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={avatarSrc}
-          alt={name}
-          className="h-28 w-28 md:h-32 md:w-32 rounded-full object-cover border"
-        />
+        <div className="relative h-28 w-28 md:h-32 md:w-32 border-4 border-gray-800 bg-white shadow-[4px_4px_0_0_#1f2937] overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={avatarSrc}
+            alt={name}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </div>
       </div>
       <div className="flex-1 space-y-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-3">
             {name}
-            <span className="text-sm font-normal px-2 py-0.5 rounded bg-muted text-muted-foreground">
+            <span className="text-xs font-normal px-2 py-1 bg-yellow-200 border-2 border-yellow-600 shadow-[2px_2px_0_0_#ca8a04] text-yellow-900 uppercase tracking-wide">
               {title}
             </span>
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-3">
+          <p className="mt-3 text-sm text-gray-700 leading-relaxed line-clamp-3">
             {bio}
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-          {company && <span>🏢 {company}</span>}
-          {location && <span>📍 {location}</span>}
-          <Button asChild size="sm" variant="outline">
-            <Link href={github} target="_blank" rel="noreferrer">
+        <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-gray-600">
+          {company && (
+            <span className="inline-flex items-center gap-1 bg-blue-200 border-2 border-blue-600 px-2 py-1 shadow-[2px_2px_0_0_#1d4ed8] text-blue-900">
+              🏢 {company}
+            </span>
+          )}
+          {location && (
+            <span className="inline-flex items-center gap-1 bg-green-200 border-2 border-green-600 px-2 py-1 shadow-[2px_2px_0_0_#15803d] text-green-900">
+              📍 {location}
+            </span>
+          )}
+          <Link
+            href={github}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-block"
+          >
+            <PixelButton variant="secondary" size="sm">
               GitHub
-            </Link>
-          </Button>
+            </PixelButton>
+          </Link>
         </div>
       </div>
     </section>

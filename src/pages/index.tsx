@@ -1,5 +1,6 @@
 import Layout from "../components/Layout";
-import ArticleCard from "../components/ArticleCard";
+// ArticleCard removed in favor of pixel styled BlogCard
+import { BlogCard } from "../components/BlogCard";
 import { trpc } from "../utils/trpc";
 import { Skeleton } from "../components/ui/skeleton";
 import ProfileHeader from "../components/ProfileHeader";
@@ -34,15 +35,19 @@ export default function Home() {
           ))}
         {!isLoading &&
           posts?.map((post) => (
-            <ArticleCard
+            <BlogCard
               key={post.id}
-              slug={post.slug}
-              frontMatter={{
-                title: post.title,
-                description: post.description,
-                category: post.category?.name,
-                tags: post.tags?.map((t) => t.name),
-              }}
+              slug={post.slug as string}
+              title={post.title as string}
+              excerpt={(post.description as string) || ""}
+              date={
+                post.createdAt
+                  ? new Date(post.createdAt as any).toISOString().slice(0, 10)
+                  : ""
+              }
+              category={post.category?.name || "未分类"}
+              imageUrl="/placeholder.png"
+              readTime="约 3 分钟"
             />
           ))}
       </div>
