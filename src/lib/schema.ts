@@ -42,6 +42,7 @@ export const posts = pgTable("posts", {
   description: text("description"),
   content: text("content"),
   createdAt: timestamp("created_at").defaultNow(),
+  status: text("status").notNull().default("draft"), // draft | published
   categoryId: integer("category_id").references(() => categories.id),
 });
 

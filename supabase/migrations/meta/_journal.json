@@ -8,6 +8,13 @@
       "when": 1756978984426,
       "tag": "0000_absent_blue_blade",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1757049487098,
+      "tag": "0001_red_reaper",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,5 @@
-import React from 'react';
+import React from "react";
+import { Badge } from "./ui/badge";
 
 interface Props {
   tag: string;
@@ -6,8 +7,8 @@ interface Props {
 
 export default function Tag({ tag }: Props) {
   return (
-    <span className="inline-block bg-gray-200 text-gray-700 px-2 py-1 rounded mr-2 text-sm">
+    <Badge variant="secondary" className="mr-2">
       {tag}
-    </span>
+    </Badge>
   );
 }

@@ -1,4 +1,5 @@
 import { GetServerSideProps } from "next";
+import Link from "next/link";
 import Layout from "../../components/Layout";
 import Tag from "../../components/Tag";
 import { remark } from "remark";
@@ -29,6 +30,14 @@ export default function PostPage({ post }: Props) {
   return (
     <Layout>
       <article>
+        <div className="mb-4">
+          <Link
+            href="/"
+            className="text-sm text-blue-600 hover:underline inline-flex items-center gap-1"
+          >
+            <span aria-hidden>←</span> 返回
+          </Link>
+        </div>
         <h1 className="text-3xl font-bold mb-4">{post.frontMatter.title}</h1>
         {post.createdDate && (
           <p className="text-sm text-gray-500 mb-4">{post.createdDate}</p>

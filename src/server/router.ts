@@ -22,7 +22,10 @@ export const appRouter = t.router({
       (Post & { category: Category | null; tags: Tag[] })[]
     > => {
       // get posts
-      const basePosts: Post[] = await db.select().from(posts);
+      const basePosts: Post[] = await db
+        .select()
+        .from(posts)
+        .where(eq(posts.status, "published"));
       // categories lookup
       const categoriesMap: Record<number, Category> = {};
       const catRows: Category[] = await db.select().from(categories);
@@ -75,10 +78,11 @@ export const appRouter = t.router({
         content: z.string().optional().default(""),
         category: z.string().optional(),
         tags: z.array(z.string()).optional().default([]),
+        status: z.enum(["draft", "published"]).optional().default("draft"),
       })
     )
     .mutation(async ({ input }) => {
-      const { title, content, category, tags: tagNames } = input;
+      const { title, content, category, tags: tagNames, status } = input;
       const slugBase = title
         .trim()
         .toLowerCase()
@@ -120,7 +124,7 @@ export const appRouter = t.router({
 
         const insertedPost = await tx
           .insert(posts)
-          .values({ title, content, slug, categoryId })
+          .values({ title, content, slug, categoryId, status })
           .returning({
             id: posts.id,
             title: posts.title,
@@ -128,6 +132,7 @@ export const appRouter = t.router({
             content: posts.content,
             categoryId: posts.categoryId,
             createdAt: posts.createdAt,
+            status: posts.status,
           });
         const postId = insertedPost[0].id as number;
 
@@ -178,6 +183,48 @@ export const appRouter = t.router({
           },
         };
       });
+    }),
+  listAdminPosts: t.procedure.query(async () => {
+    try {
+      const rows = await db.select().from(posts);
+      return rows;
+    } catch (err) {
+      console.error("listAdminPosts error", err);
+      return [];
+    }
+  }),
+  updatePost: t.procedure
+    .input(
+      z.object({
+        id: z.number(),
+        title: z.string().min(1).optional(),
+        content: z.string().optional(),
+        status: z.enum(["draft", "published"]).optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { id, ...rest } = input;
+      const updated = await db
+        .update(posts)
+        .set(rest)
+        .where(eq(posts.id, id))
+        .returning({
+          id: posts.id,
+          title: posts.title,
+          status: posts.status,
+          content: posts.content,
+        });
+      return { post: updated[0] };
+    }),
+  updatePostStatus: t.procedure
+    .input(z.object({ id: z.number(), status: z.enum(["draft", "published"]) }))
+    .mutation(async ({ input }) => {
+      const updated = await db
+        .update(posts)
+        .set({ status: input.status })
+        .where(eq(posts.id, input.id))
+        .returning({ id: posts.id, status: posts.status });
+      return { post: updated[0] };
     }),
   authLogin: t.procedure
     .input(
