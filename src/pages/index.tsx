@@ -14,7 +14,7 @@ export default function Home() {
         name="Milkrong"
         title="Full Stack Developer"
         github="https://github.com/milkrong"
-        avatarSrc="/avatar.jpg"
+        avatarSrc="https://github.com/milkrong.png"
         bio="热爱构建高质量 Web 应用，关注架构演进、开发者体验与性能优化。这里记录一些实践、思考与笔记。"
         location="Shanghai"
         company="Independent"

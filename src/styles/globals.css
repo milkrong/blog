@@ -25,6 +25,7 @@
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
@@ -46,9 +47,11 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
   }
+
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -56,4 +59,78 @@
 
 .ProseMirror {
   @apply outline-none;
+}
+
+/* Pixel cube animation */
+.pixel-cube {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: cube-rotate 12s linear infinite;
+}
+
+.pixel-cube .face {
+  position: absolute;
+  inset: 0;
+  border: 4px solid #1f2937;
+  box-shadow: 4px 4px 0 0 #1f2937;
+  opacity: 0.95;
+  animation: cube-blink 2.4s steps(2, end) infinite;
+}
+
+.pixel-cube .front {
+  background: #ef4444;
+  transform: translateZ(2.5rem);
+}
+
+.pixel-cube .back {
+  background: #22c55e;
+  transform: rotateY(180deg) translateZ(2.5rem);
+}
+
+.pixel-cube .right {
+  background: #3b82f6;
+  transform: rotateY(90deg) translateZ(2.5rem);
+}
+
+.pixel-cube .left {
+  background: #f97316;
+  transform: rotateY(-90deg) translateZ(2.5rem);
+}
+
+.pixel-cube .top {
+  background: #facc15;
+  transform: rotateX(90deg) translateZ(2.5rem);
+}
+
+.pixel-cube .bottom {
+  background: #e5e7eb;
+  transform: rotateX(-90deg) translateZ(2.5rem);
+}
+
+@keyframes cube-rotate {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+
+  50% {
+    transform: rotateX(180deg) rotateY(180deg);
+  }
+
+  100% {
+    transform: rotateX(360deg) rotateY(360deg);
+  }
+}
+
+@keyframes cube-blink {
+
+  0%,
+  100% {
+    filter: brightness(100%);
+  }
+
+  50% {
+    filter: brightness(70%);
+  }
 }

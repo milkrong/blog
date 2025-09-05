@@ -8,7 +8,11 @@ type Props = {
 
 export default function Layout({ children }: Props) {
   return (
-    <div className="flex min-h-screen flex-col bg-[linear-gradient(#f8fafc,#eef2f7)]">
+    <div className="relative flex min-h-screen flex-col bg-[linear-gradient(180deg,#e2e8f0,#cbd5e1)]">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(31,41,55,0.05)_1px,transparent_1px),linear-gradient(180deg,rgba(31,41,55,0.05)_1px,transparent_1px)] [background-size:16px_16px]"
+      />
       {/* Header */}
       <header className="bg-white border-b-4 border-gray-800 shadow-[4px_4px_0_0_#1f2937]">
         <div className="max-w-6xl mx-auto px-4 flex h-16 items-center justify-between">

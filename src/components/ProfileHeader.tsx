@@ -69,6 +69,18 @@ export function ProfileHeader({
           </Link>
         </div>
       </div>
+      <div className="hidden md:flex items-center justify-center flex-shrink-0 mr-8">
+        <div className="h-16 w-16 md:h-20 md:w-20">
+          <div className="pixel-cube">
+            <div className="face front" />
+            <div className="face back" />
+            <div className="face right" />
+            <div className="face left" />
+            <div className="face top" />
+            <div className="face bottom" />
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
