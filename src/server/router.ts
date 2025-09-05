@@ -10,6 +10,7 @@ import {
   postsToTags,
   tags,
 } from "../lib/schema";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 
@@ -66,6 +67,140 @@ export const appRouter = t.router({
         .values({ email, passwordHash })
         .returning({ id: users.id, email: users.email });
       return { user: inserted[0] };
+    }),
+  createPost: t.procedure
+    .input(
+      z.object({
+        title: z.string().min(1),
+        content: z.string().optional().default(""),
+        category: z.string().optional(),
+        tags: z.array(z.string()).optional().default([]),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { title, content, category, tags: tagNames } = input;
+      const slugBase = title
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+      // ensure unique slug
+      let slug = slugBase || "post";
+      let i = 1;
+      while (
+        (
+          await db
+            .select({ id: posts.id })
+            .from(posts)
+            .where(eq(posts.slug, slug))
+        )?.length > 0
+      ) {
+        slug = `${slugBase}-${i++}`;
+      }
+
+      return await db.transaction(async (tx) => {
+        // category
+        let categoryId: number | null = null;
+        if (category && category.trim().length > 0) {
+          const existingCat = await tx
+            .select()
+            .from(categories)
+            .where(eq(categories.name, category))
+            .limit(1);
+          if (existingCat.length > 0) {
+            categoryId = existingCat[0].id as number;
+          } else {
+            const insertedCat = await tx
+              .insert(categories)
+              .values({ name: category, slug: category })
+              .returning({ id: categories.id });
+            categoryId = insertedCat[0].id as number;
+          }
+        }
+
+        const insertedPost = await tx
+          .insert(posts)
+          .values({ title, content, slug, categoryId })
+          .returning({
+            id: posts.id,
+            title: posts.title,
+            slug: posts.slug,
+            content: posts.content,
+            categoryId: posts.categoryId,
+            createdAt: posts.createdAt,
+          });
+        const postId = insertedPost[0].id as number;
+
+        const tagRecords: { id: number; name: string; slug: string }[] = [];
+        for (const rawName of tagNames || []) {
+          const name = rawName.trim();
+          if (!name) continue;
+          const existingTag = await tx
+            .select()
+            .from(tags)
+            .where(eq(tags.name, name))
+            .limit(1);
+          let tagId: number;
+          if (existingTag.length > 0) {
+            tagId = existingTag[0].id as number;
+            tagRecords.push({
+              id: tagId,
+              name: existingTag[0].name as string,
+              slug: existingTag[0].slug as string,
+            });
+          } else {
+            const insertedTag = await tx
+              .insert(tags)
+              .values({ name, slug: name })
+              .returning({ id: tags.id, name: tags.name, slug: tags.slug });
+            tagId = insertedTag[0].id as number;
+            tagRecords.push(insertedTag[0] as any);
+          }
+          await tx.insert(postsToTags).values({ postId, tagId });
+        }
+
+        // build category object if any
+        let categoryObj: Category | null = null;
+        if (categoryId !== null) {
+          const catRow = await tx
+            .select()
+            .from(categories)
+            .where(eq(categories.id, categoryId))
+            .limit(1);
+          if (catRow.length > 0) categoryObj = catRow[0] as any;
+        }
+
+        return {
+          post: {
+            ...insertedPost[0],
+            category: categoryObj,
+            tags: tagRecords,
+          },
+        };
+      });
+    }),
+  authLogin: t.procedure
+    .input(
+      z.object({
+        email: z.string().email(),
+        password: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { email, password } = input;
+      const user = await db.query.users.findFirst({
+        where: (u, { eq }) => eq(u.email, email),
+      });
+      if (!user) {
+        throw new Error("Invalid email or password");
+      }
+      const valid = await bcrypt.compare(password, user.passwordHash as string);
+      if (!valid) {
+        throw new Error("Invalid email or password");
+      }
+      // For now just return a placeholder token (could integrate JWT later)
+      const token = `local-${user.id}`;
+      return { user: { id: user.id, email: user.email }, token };
     }),
 });
 

@@ -2,9 +2,6 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { trpc } from "../utils/trpc";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -14,6 +11,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const registerMutation = trpc.authRegister.useMutation();
+  const loginMutation = trpc.authLogin.useMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,25 +24,9 @@ export default function LoginPage() {
         setMode("login");
         setError("Registered successfully, please login.");
       } else {
-        // Login flow
-        const res = await fetch(
-          `${supabaseUrl}/auth/v1/token?grant_type=password`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              apikey: supabaseKey,
-            },
-            body: JSON.stringify({ email, password }),
-          }
-        );
-        const data = await res.json();
-        if (res.ok) {
-          localStorage.setItem("sb-access-token", data.access_token);
-          router.push("/admin");
-        } else {
-          setError(data.error_description || "Login failed");
-        }
+        const data = await loginMutation.mutateAsync({ email, password });
+        localStorage.setItem("sb-access-token", data.token);
+        router.push("/admin");
       }
     } catch (err: any) {
       setError(err.message || "Unexpected error");
@@ -62,6 +44,9 @@ export default function LoginPage() {
         {error && <p className="text-red-600">{error}</p>}
         {registerMutation.error && (
           <p className="text-red-600">{registerMutation.error.message}</p>
+        )}
+        {loginMutation.error && (
+          <p className="text-red-600">{loginMutation.error.message}</p>
         )}
         <input
           type="email"

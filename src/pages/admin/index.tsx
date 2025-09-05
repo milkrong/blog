@@ -2,9 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+import { trpc } from "../../utils/trpc";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -14,6 +12,7 @@ export default function AdminPage() {
   const editor = useEditor({
     extensions: [StarterKit],
     content: "",
+    immediatelyRender: false,
   });
 
   useEffect(() => {
@@ -31,102 +30,21 @@ export default function AdminPage() {
     router.push("/login");
   };
 
+  const createPostMutation = trpc.createPost.useMutation();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const content = editor?.getHTML() || "";
-    const token = localStorage.getItem("sb-access-token");
-    const slug = title.toLowerCase().replace(/\s+/g, "-");
-
-    // upsert category
-    let categoryId: number | null = null;
-    if (category) {
-      const catRes = await fetch(
-        `${supabaseUrl}/rest/v1/categories?name=eq.${encodeURIComponent(
-          category
-        )}`,
-        {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const existing = await catRes.json();
-      if (existing.length > 0) {
-        categoryId = existing[0].id;
-      } else {
-        const newCatRes = await fetch(`${supabaseUrl}/rest/v1/categories`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: supabaseKey,
-            Authorization: `Bearer ${token}`,
-            Prefer: "return=representation",
-          },
-          body: JSON.stringify({ name: category, slug: category }),
-        });
-        const inserted = await newCatRes.json();
-        categoryId = inserted[0].id;
-      }
-    }
-
-    const postRes = await fetch(`${supabaseUrl}/rest/v1/posts`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: supabaseKey,
-        Authorization: `Bearer ${token}`,
-        Prefer: "return=representation",
-      },
-      body: JSON.stringify({ title, content, slug, category_id: categoryId }),
-    });
-    const post = (await postRes.json())[0];
-
     const tagsArr = tags
       .split(",")
       .map((t) => t.trim())
       .filter((t) => t.length > 0);
-
-    for (const tagName of tagsArr) {
-      const tagRes = await fetch(
-        `${supabaseUrl}/rest/v1/tags?name=eq.${encodeURIComponent(tagName)}`,
-        {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const existingTag = await tagRes.json();
-      let tagId: number;
-      if (existingTag.length > 0) {
-        tagId = existingTag[0].id;
-      } else {
-        const newTagRes = await fetch(`${supabaseUrl}/rest/v1/tags`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: supabaseKey,
-            Authorization: `Bearer ${token}`,
-            Prefer: "return=representation",
-          },
-          body: JSON.stringify({ name: tagName, slug: tagName }),
-        });
-        const insertedTag = await newTagRes.json();
-        tagId = insertedTag[0].id;
-      }
-
-      await fetch(`${supabaseUrl}/rest/v1/posts_to_tags`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: supabaseKey,
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ post_id: post.id, tag_id: tagId }),
-      });
-    }
-
+    await createPostMutation.mutateAsync({
+      title,
+      content,
+      category: category || undefined,
+      tags: tagsArr,
+    });
     setTitle("");
     setCategory("");
     setTags("");
@@ -170,10 +88,16 @@ export default function AdminPage() {
         />
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+          disabled={createPostMutation.status === "pending"}
         >
-          Submit
+          {createPostMutation.status === "pending" ? "Submitting..." : "Submit"}
         </button>
+        {createPostMutation.error && (
+          <p className="text-red-600 text-sm">
+            {createPostMutation.error.message}
+          </p>
+        )}
       </form>
     </div>
   );
