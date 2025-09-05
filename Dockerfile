@@ -26,8 +26,7 @@ ENV NODE_ENV=production \
 
 # Copy necessary files from build stage
 COPY --from=build /app/package.json ./package.json
-# Copy next.config.js if present (will fail build if missing, acceptable) ; wrap in multi-stage optional improvement if needed
-COPY --from=build /app/next.config.js ./next.config.js
+# next.config.js 不存在于仓库，若未来添加再复制；当前删除该行避免构建报错
 COPY --from=build /app/public ./public
 COPY --from=build /app/.next ./.next
 COPY --from=build /app/node_modules ./node_modules
