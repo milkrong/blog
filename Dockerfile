@@ -4,11 +4,12 @@ WORKDIR /app
 # Enable corepack to get pnpm
 RUN corepack enable
 
-# Only copy lock & manifest first for better layer caching
-COPY package.json pnpm-lock.yaml ./
+# Copy only manifest (no lock file for now)
+COPY package.json ./
 
 FROM base AS deps
-RUN pnpm install --frozen-lockfile
+# Install without lock file (will generate a new lock internally)
+RUN pnpm install --no-frozen-lockfile
 
 FROM deps AS build
 COPY . .
