@@ -1,12 +1,25 @@
 version: "3.9"
 services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
   web:
     build: .
+    depends_on:
+      - db
     environment:
-      - SUPABASE_DB_URL=${SUPABASE_DB_URL}
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
       - R2_ACCOUNT_ID=${R2_ACCOUNT_ID}
       - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
       - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
       - R2_BUCKET=${R2_BUCKET}
       - R2_PUBLIC_BASE_URL=${R2_PUBLIC_BASE_URL}
-
+volumes:
+  pgdata:

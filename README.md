@@ -15,20 +15,23 @@ The application will be available at http://localhost:3000.
 Create a `.env` file in the project root or define variables in `docker-compose.yml` under the `environment` key. For example:
 
 ```
-NEXT_PUBLIC_ANALYTICS_ID=your-id
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_DB_URL=postgresql://postgres:password@host:5432/postgres?sslmode=require
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
+R2_ACCOUNT_ID=...
+R2_ACCESS_KEY_ID=...
+R2_SECRET_ACCESS_KEY=...
+R2_BUCKET=...
+R2_PUBLIC_BASE_URL=https://your-public-r2-domain
 ```
 
 These variables are loaded by Next.js during build and runtime.
 
 ### Database Migrations
 
-Drizzle ORM is used to manage the `posts` table schema. To generate and push migrations to your Supabase instance, first set `SUPABASE_DB_URL` to the service-role connection string provided by Supabase:
+Run migrations against local Postgres:
 
 ```
-export SUPABASE_DB_URL="postgresql://postgres:password@host:5432/postgres?sslmode=require"
+export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
+pnpm db:migrate
 ```
 
 Then run the migration commands:

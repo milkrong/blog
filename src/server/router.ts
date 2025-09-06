@@ -15,6 +15,7 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { globalCache } from "../lib/cache";
 
 const t = initTRPC.create();
 
@@ -23,6 +24,8 @@ export const appRouter = t.router({
     async (): Promise<
       (Post & { category: Category | null; tags: Tag[] })[]
     > => {
+      const cached = globalCache.get("posts_home");
+      if (cached) return cached as any;
       // get posts
       const basePosts: Post[] = await db
         .select()
@@ -43,11 +46,13 @@ export const appRouter = t.router({
         const tg = tagMap[pt.tag_id];
         if (tg) postTagMap[pt.post_id].push(tg);
       });
-      return basePosts.map((p) => ({
+      const result = basePosts.map((p) => ({
         ...p,
         category: p.categoryId ? categoriesMap[p.categoryId] || null : null,
         tags: postTagMap[p.id as number] || [],
       }));
+      globalCache.set("posts_home", result, 60000);
+      return result;
     }
   ),
   authRegister: t.procedure

@@ -2,11 +2,14 @@ import Layout from "../components/Layout";
 // ArticleCard removed in favor of pixel styled BlogCard
 import { BlogCard } from "../components/BlogCard";
 import { trpc } from "../utils/trpc";
+import type { GetStaticProps } from "next";
+import { appRouter } from "../server/router";
+import { QueryClient, dehydrate } from "@tanstack/react-query";
 import { Skeleton } from "../components/ui/skeleton";
 import ProfileHeader from "../components/ProfileHeader";
 
 export default function Home() {
-  const { data: posts, isLoading } = trpc.posts.useQuery();
+  const { data: posts, isLoading } = trpc.posts.useQuery(undefined, { staleTime: 60000 });
 
   return (
     <Layout>
@@ -54,3 +57,21 @@ export default function Home() {
     </Layout>
   );
 }
+
+export const getStaticProps: GetStaticProps = async () => {
+  const queryClient = new QueryClient();
+  // prefetch via direct call to router instead of SSG helpers to avoid version mismatch
+  const caller = appRouter.createCaller({});
+  const data = await caller.posts();
+  const jsonSafe = (data as any[]).map((p) => ({
+    ...p,
+    createdAt: p.createdAt ? new Date(p.createdAt as any).toISOString() : null,
+  }));
+  await queryClient.setQueryData(["posts"], jsonSafe as any);
+  return {
+    props: {
+      trpcState: dehydrate(queryClient),
+    },
+    revalidate: 60,
+  };
+};

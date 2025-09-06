@@ -1,4 +1,4 @@
-import { GetServerSideProps } from "next";
+import { GetStaticPaths, GetStaticProps } from "next";
 import Link from "next/link";
 import Layout from "../../components/Layout";
 import Tag from "../../components/Tag";
@@ -55,9 +55,7 @@ export default function PostPage({ post }: Props) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<Props> = async ({
-  params,
-}) => {
+export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   const slug = params?.slug as string;
   // Fetch from database only (markdown removed)
   const dbPost = await db.query.posts.findFirst({
@@ -113,7 +111,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
       createdAt: createdAtISO,
       createdDate,
     };
-    return { props: { post } };
+    return { props: { post }, revalidate: 60 };
   }
   return { notFound: true };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  // Pre-render none; fallback to on-demand build
+  return { paths: [], fallback: 'blocking' };
 };
