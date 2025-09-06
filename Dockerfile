@@ -5,7 +5,7 @@ WORKDIR /app
 RUN corepack enable
 
 # Copy manifests early to leverage Docker layer caching
-COPY package.json pnpm-lock.yaml .npmrc ./
+COPY package.json .npmrc ./
 
 FROM base AS deps
 # Install using the exact lockfile for reproducible installs
