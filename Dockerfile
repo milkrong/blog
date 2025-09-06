@@ -4,12 +4,12 @@ WORKDIR /app
 # Enable corepack to get pnpm
 RUN corepack enable
 
-# Copy only manifest (no lock file for now)
-COPY package.json ./
+# Copy manifests early to leverage Docker layer caching
+COPY package.json pnpm-lock.yaml .npmrc ./
 
 FROM base AS deps
-# Install without lock file (will generate a new lock internally)
-RUN pnpm install --no-frozen-lockfile
+# Install using the exact lockfile for reproducible installs
+RUN pnpm install --frozen-lockfile
 
 FROM deps AS build
 COPY . .

@@ -2,6 +2,7 @@
   "name": "next-app",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@9.12.2",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -43,7 +44,8 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^20.0.0",
-    "@types/react": "11.0.0",
+    "@types/react": "^18.2.74",
+    "@types/react-dom": "^18.2.25",
     "autoprefixer": "latest",
     "drizzle-kit": "^0.31.4",
     "postcss": "^8.4.24",
