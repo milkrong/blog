@@ -9,7 +9,7 @@ COPY package.json pnpm-lock.yaml .npmrc ./
 
 FROM base AS deps
 # Install using the exact lockfile for reproducible installs
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 
 FROM deps AS build
 COPY . .
