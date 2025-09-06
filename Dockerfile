@@ -13,17 +13,8 @@ RUN pnpm install
 
 FROM deps AS build
 COPY . .
-ARG DATABASE_URL
-ENV DATABASE_URL=$DATABASE_URL \
-    NODE_ENV=production \
+ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1
-# Run migrations before building if DATABASE_URL is provided at build time
-RUN if [ -z "$DATABASE_URL" ]; then \
-      echo "DATABASE_URL not provided; skipping migrations during build"; \
-    else \
-      echo "Running migrations during build..." && \
-      ./node_modules/.bin/drizzle-kit migrate --config=./drizzle.config.ts; \
-    fi
 RUN pnpm build
 
 FROM node:18-alpine AS runner
@@ -42,11 +33,11 @@ COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/src/lib/schema.ts ./src/lib/schema.ts
 COPY --from=build /app/drizzle.config.ts ./drizzle.config.ts
 COPY --from=build /app/supabase ./supabase
+COPY --from=build /app/package.json ./package.json
 
-# Create entrypoint script to run DB migrations before starting the app
-RUN printf '#!/bin/sh\nset -e\n\nif [ -z "$DATABASE_URL" ]; then\n  echo "DATABASE_URL is not set; skipping migrations"\nelse\n  echo "Running database migrations..."\n  ./node_modules/.bin/drizzle-kit migrate --config=./drizzle.config.ts || { echo "Migrations failed"; exit 1; }\nfi\n\nexec "$@"\n' > /app/entrypoint.sh \
- && chmod +x /app/entrypoint.sh
+# Create entrypoint script to run migrations at runtime, then start the app
+RUN printf "#!/bin/sh\nset -e\n\nif [ -z \"$DATABASE_URL\" ]; then\n  echo 'DATABASE_URL is not set; skipping migrations'\nelse\n  echo 'Running database migrations...'\n  npx drizzle-kit migrate --config=./drizzle.config.ts || { echo 'Migrations failed'; exit 1; }\nfi\n\nexec pnpm start\n" > /app/entrypoint.sh \
+  && chmod +x /app/entrypoint.sh
 
 EXPOSE 3000
 ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["pnpm", "start"]

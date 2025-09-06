@@ -9,13 +9,17 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
   web:
     build:
       context: .
-      args:
-        - DATABASE_URL=${DATABASE_URL}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
       - R2_ACCOUNT_ID=${R2_ACCOUNT_ID}
