@@ -10,7 +10,10 @@ services:
     ports:
       - "5432:5432"
   web:
-    build: .
+    build:
+      context: .
+      args:
+        - DATABASE_URL=${DATABASE_URL}
     depends_on:
       - db
     environment:
