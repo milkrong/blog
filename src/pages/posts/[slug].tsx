@@ -49,7 +49,7 @@ export default function PostPage({ post }: Props) {
             ))}
           </div>
         )}
-        <div dangerouslySetInnerHTML={{ __html: post.content }} />
+        <div className="prose prose-slate max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />
       </article>
     </Layout>
   );

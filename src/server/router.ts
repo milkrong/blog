@@ -13,6 +13,8 @@ import {
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const t = initTRPC.create();
 
@@ -248,6 +250,35 @@ export const appRouter = t.router({
       // For now just return a placeholder token (could integrate JWT later)
       const token = `local-${user.id}`;
       return { user: { id: user.id, email: user.email }, token };
+    }),
+  r2GetUploadUrl: t.procedure
+    .input(
+      z.object({
+        filename: z.string().min(1),
+        contentType: z.string().min(1),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const accountId = process.env.R2_ACCOUNT_ID as string;
+      const accessKeyId = process.env.R2_ACCESS_KEY_ID as string;
+      const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY as string;
+      const bucket = process.env.R2_BUCKET as string;
+      const publicBase = process.env.R2_PUBLIC_BASE_URL as string; // e.g. https://cdn.example.com or https://<account>.r2.cloudflarestorage.com/<bucket>
+
+      if (!accountId || !accessKeyId || !secretAccessKey || !bucket || !publicBase) {
+        throw new Error("R2 env not configured");
+      }
+
+      const key = `${Date.now()}-${Math.random().toString(36).slice(2)}-${input.filename}`;
+      const s3 = new S3Client({
+        region: "auto",
+        endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+        credentials: { accessKeyId, secretAccessKey },
+      });
+      const command = new PutObjectCommand({ Bucket: bucket, Key: key, ContentType: input.contentType });
+      const url = await getSignedUrl(s3, command, { expiresIn: 60 });
+      const publicUrl = `${publicBase.replace(/\/$/, "")}/${key}`;
+      return { uploadUrl: url, publicUrl, key };
     }),
 });
 

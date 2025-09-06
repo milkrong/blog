@@ -1,0 +1,119 @@
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Link from "@tiptap/extension-link";
+import Image from "@tiptap/extension-image";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { createLowlight } from "lowlight";
+import js from "highlight.js/lib/languages/javascript";
+import ts from "highlight.js/lib/languages/typescript";
+import json from "highlight.js/lib/languages/json";
+import xml from "highlight.js/lib/languages/xml";
+import css from "highlight.js/lib/languages/css";
+const lowlight = createLowlight({ js, javascript: js, ts, typescript: ts, json, xml, html: xml, css });
+import { PixelButton } from "../../components/PixelButton";
+import { PixelInput } from "../../components/PixelInput";
+import { Label } from "../../components/ui/label";
+import { trpc } from "../../utils/trpc";
+import EditorToolbar from "../../components/EditorToolbar";
+
+export default function AdminNewPage() {
+    const router = useRouter();
+    const [title, setTitle] = useState("");
+    const [category, setCategory] = useState("");
+    const [tags, setTags] = useState("");
+    const editor = useEditor({
+        extensions: [
+            StarterKit.configure({ codeBlock: false }),
+            Link.configure({ openOnClick: true, autolink: true, HTMLAttributes: { rel: "noreferrer", target: "_blank" } }),
+            Image,
+            CodeBlockLowlight.configure({ lowlight })
+        ],
+        content: "",
+        immediatelyRender: false,
+    });
+
+    useEffect(() => {
+        const token = typeof window !== "undefined" ? localStorage.getItem("sb-access-token") : null;
+        if (!token) router.push("/login");
+    }, [router]);
+
+    const utils = trpc.useUtils?.() as any;
+    const createPostMutation = trpc.createPost.useMutation({
+        onSuccess: () => utils?.listAdminPosts?.invalidate?.(),
+    });
+
+    const buildPayload = (publish: boolean) => {
+        const content = editor?.getHTML() || "";
+        const tagsArr = tags.split(",").map((t) => t.trim()).filter((t) => t.length > 0);
+        const status: "draft" | "published" = publish ? "published" : "draft";
+        return { title, content, category: category || undefined, tags: tagsArr, status };
+    };
+
+    const handleCreate = async (publish: boolean) => {
+        await createPostMutation.mutateAsync(buildPayload(publish));
+        router.push("/admin");
+    };
+
+    // keyboard shortcuts
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+            const mod = isMac ? e.metaKey : e.ctrlKey;
+            if (mod && e.key.toLowerCase() === "s") {
+                e.preventDefault();
+                handleCreate(false);
+            }
+            if (mod && (e.key === "Enter")) {
+                e.preventDefault();
+                handleCreate(true);
+            }
+        };
+        window.addEventListener("keydown", handler);
+        return () => window.removeEventListener("keydown", handler);
+    }, [title, category, tags, editor]);
+
+    return (
+        <div className="max-w-6xl mx-auto px-4 py-8 space-y-6 font-mono">
+            <div className="flex items-center justify-between">
+                <h1 className="text-3xl font-bold tracking-tight">新建文章</h1>
+                <PixelButton variant="secondary" size="sm" onClick={() => router.push("/admin")}>返回列表</PixelButton>
+            </div>
+            <div className="bg-white border-4 border-gray-800 shadow-[6px_6px_0_0_#1f2937] p-6 space-y-6">
+                <div className="space-y-2">
+                    <Label htmlFor="title">标题</Label>
+                    <PixelInput id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="category">分类</Label>
+                        <PixelInput id="category" value={category} onChange={(e) => setCategory(e.target.value)} />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="tags">标签 (逗号分隔)</Label>
+                        <PixelInput id="tags" value={tags} onChange={(e) => setTags(e.target.value)} />
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <Label>内容</Label>
+                    <EditorToolbar editor={editor} />
+                    <EditorContent editor={editor} className="min-h-[500px] border-4 border-gray-800 bg-white shadow-[4px_4px_0_0_#1f2937] p-3 prose max-w-none" />
+                </div>
+                <div className="flex gap-3">
+                    <PixelButton disabled={createPostMutation.isPending} onClick={() => handleCreate(false)}>
+                        {createPostMutation.isPending ? "保存中..." : "保存(草稿)"}
+                    </PixelButton>
+                    <PixelButton variant="secondary" disabled={createPostMutation.isPending} onClick={() => handleCreate(true)}>
+                        {createPostMutation.isPending ? "发布中..." : "发布"}
+                    </PixelButton>
+                </div>
+                {createPostMutation.error && (
+                    <p className="text-sm text-red-600">{createPostMutation.error.message}</p>
+                )}
+            </div>
+        </div>
+    );
+}
+
+

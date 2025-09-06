@@ -59,6 +59,26 @@
 
 .ProseMirror {
   @apply outline-none;
+  min-height: 500px;
+  padding: 0.75rem;
+  /* match p-3 */
+  cursor: text;
+}
+
+.ProseMirror>*+* {
+  margin-top: 0.75rem;
+}
+
+/* code highlight theme (github-like minimal) */
+pre code.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 1rem;
+}
+
+code.hljs {
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
 }
 
 /* Pixel cube animation */

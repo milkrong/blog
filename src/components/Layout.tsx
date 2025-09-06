@@ -22,13 +22,6 @@ export default function Layout({ children }: Props) {
           >
             milkrong blog
           </Link>
-          <nav className="flex items-center gap-3">
-            <Link href="/login" className="inline-block">
-              <PixelButton variant="secondary" size="sm">
-                登录
-              </PixelButton>
-            </Link>
-          </nav>
         </div>
       </header>
 
