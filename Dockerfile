@@ -15,6 +15,8 @@ FROM deps AS build
 COPY . .
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_SKIP_DB=1
+ENV NEXT_SKIP_DB=$NEXT_SKIP_DB
 RUN pnpm build
 
 FROM node:18-alpine AS runner

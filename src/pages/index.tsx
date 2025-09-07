@@ -60,14 +60,18 @@ export default function Home() {
 
 export const getStaticProps: GetStaticProps = async () => {
   const queryClient = new QueryClient();
-  // prefetch via direct call to router instead of SSG helpers to avoid version mismatch
-  const caller = appRouter.createCaller({});
-  const data = await caller.posts();
-  const jsonSafe = (data as any[]).map((p) => ({
-    ...p,
-    createdAt: p.createdAt ? new Date(p.createdAt as any).toISOString() : null,
-  }));
-  await queryClient.setQueryData(["posts"], jsonSafe as any);
+  if (process.env.NEXT_SKIP_DB === "1") {
+    // Skip DB prefetch during Docker image build
+  } else {
+    // prefetch via direct call to router instead of SSG helpers to avoid version mismatch
+    const caller = appRouter.createCaller({});
+    const data = await caller.posts();
+    const jsonSafe = (data as any[]).map((p) => ({
+      ...p,
+      createdAt: p.createdAt ? new Date(p.createdAt as any).toISOString() : null,
+    }));
+    await queryClient.setQueryData(["posts"], jsonSafe as any);
+  }
   return {
     props: {
       trpcState: dehydrate(queryClient),
