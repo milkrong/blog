@@ -2,14 +2,15 @@ FROM node:18-alpine AS base
 WORKDIR /app
 
 # Enable corepack to get pnpm
-RUN corepack enable
+RUN corepack enable && apk add --no-cache libc6-compat postgresql-client
 
 # Copy manifests early to leverage Docker layer caching
 COPY package.json .npmrc ./
 
 FROM base AS deps
 # Install using the exact lockfile for reproducible installs
-RUN pnpm install
+COPY pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 FROM deps AS build
 COPY . .
@@ -21,7 +22,7 @@ RUN pnpm build
 
 FROM node:18-alpine AS runner
 WORKDIR /app
-RUN corepack enable
+RUN corepack enable && apk add --no-cache libc6-compat postgresql-client
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     PORT=3000
@@ -37,8 +38,8 @@ COPY --from=build /app/drizzle.config.ts ./drizzle.config.ts
 COPY --from=build /app/supabase ./supabase
 COPY --from=build /app/package.json ./package.json
 
-# Create entrypoint script to run migrations at runtime, then start the app
-RUN printf "#!/bin/sh\nset -e\n\nif [ -z \"$DATABASE_URL\" ]; then\n  echo 'DATABASE_URL is not set; skipping migrations'\nelse\n  echo 'Running database migrations...'\n  npx drizzle-kit migrate --config=./drizzle.config.ts || { echo 'Migrations failed'; exit 1; }\nfi\n\nexec pnpm start\n" > /app/entrypoint.sh \
+# Create entrypoint script to wait for DB, run migrations, then start the app
+RUN printf "#!/bin/sh\nset -e\n\nif [ -z \"$DATABASE_URL\" ]; then\n  echo 'DATABASE_URL is not set; skipping migrations'\nelse\n  echo 'Waiting for database to be ready...'\n  until pg_isready -d \"$DATABASE_URL\" >/dev/null 2>&1; do\n    sleep 1\n  done\n  if [ ! -f ./drizzle.config.ts ]; then\n    echo 'drizzle.config.ts not found; creating one dynamically'\n    echo 'import { defineConfig } from \"drizzle-kit\";' > ./drizzle.config.ts\n    echo 'export default defineConfig({' >> ./drizzle.config.ts\n    echo '  schema: \"./src/lib/schema.ts\",' >> ./drizzle.config.ts\n    echo '  out: \"./supabase/migrations\",' >> ./drizzle.config.ts\n    echo '  dialect: \"postgresql\",' >> ./drizzle.config.ts\n    echo '  dbCredentials: { url: process.env.DATABASE_URL! },' >> ./drizzle.config.ts\n    echo '});' >> ./drizzle.config.ts\n  fi\n  echo 'Running database migrations (drizzle-kit)...'\n  pnpm dlx drizzle-kit@0.31.4 migrate --config=./drizzle.config.ts --verbose || { echo 'Migrations failed'; exit 1; }\nfi\n\nexec pnpm start\n" > /app/entrypoint.sh \
   && chmod +x /app/entrypoint.sh
 
 EXPOSE 3000
