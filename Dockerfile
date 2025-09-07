@@ -39,8 +39,34 @@ COPY --from=build /app/supabase ./supabase
 COPY --from=build /app/package.json ./package.json
 
 # Create entrypoint script to wait for DB, run migrations, then start the app
-RUN printf "#!/bin/sh\nset -e\n\nif [ -z \"$DATABASE_URL\" ]; then\n  echo 'DATABASE_URL is not set; skipping migrations'\nelse\n  echo 'Waiting for database to be ready...'\n  until pg_isready -d \"$DATABASE_URL\" >/dev/null 2>&1; do\n    sleep 1\n  done\n  if [ ! -f ./drizzle.config.ts ]; then\n    echo 'drizzle.config.ts not found; creating one dynamically'\n    echo 'import { defineConfig } from \"drizzle-kit\";' > ./drizzle.config.ts\n    echo 'export default defineConfig({' >> ./drizzle.config.ts\n    echo '  schema: \"./src/lib/schema.ts\",' >> ./drizzle.config.ts\n    echo '  out: \"./supabase/migrations\",' >> ./drizzle.config.ts\n    echo '  dialect: \"postgresql\",' >> ./drizzle.config.ts\n    echo '  dbCredentials: { url: process.env.DATABASE_URL! },' >> ./drizzle.config.ts\n    echo '});' >> ./drizzle.config.ts\n  fi\n  echo 'Running database migrations (drizzle-kit)...'\n  pnpm dlx drizzle-kit@0.31.4 migrate --config=./drizzle.config.ts --verbose || { echo 'Migrations failed'; exit 1; }\nfi\n\nexec pnpm start\n" > /app/entrypoint.sh \
-  && chmod +x /app/entrypoint.sh
+RUN cat <<'SH' > /app/entrypoint.sh
+#!/bin/sh
+set -e
+
+if [ -z "$DATABASE_URL" ]; then
+  echo 'DATABASE_URL is not set; skipping migrations'
+else
+  echo 'Waiting for database to be ready...'
+  until pg_isready -d "$DATABASE_URL" >/dev/null 2>&1; do
+    sleep 1
+  done
+  if [ ! -f ./drizzle.config.ts ]; then
+    echo 'drizzle.config.ts not found; creating one dynamically'
+    echo 'import { defineConfig } from "drizzle-kit";' > ./drizzle.config.ts
+    echo 'export default defineConfig({' >> ./drizzle.config.ts
+    echo '  schema: "./src/lib/schema.ts",' >> ./drizzle.config.ts
+    echo '  out: "./supabase/migrations",' >> ./drizzle.config.ts
+    echo '  dialect: "postgresql",' >> ./drizzle.config.ts
+    echo '  dbCredentials: { url: process.env.DATABASE_URL! },' >> ./drizzle.config.ts
+    echo '});' >> ./drizzle.config.ts
+  fi
+  echo 'Running database migrations (drizzle-kit)...'
+  pnpm dlx drizzle-kit@0.31.4 migrate --config=./drizzle.config.ts || { echo 'Migrations failed'; exit 1; }
+fi
+
+exec pnpm start
+SH
+RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 3000
 ENTRYPOINT ["/app/entrypoint.sh"]
