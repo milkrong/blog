@@ -61,7 +61,7 @@ else
     echo '});' >> ./drizzle.config.ts
   fi
   echo 'Running database migrations (drizzle-kit)...'
-  pnpm dlx drizzle-kit@0.31.4 migrate --config=./drizzle.config.ts || { echo 'Migrations failed'; exit 1; }
+  pnpm drizzle-kit generate || { echo 'Migrations failed'; exit 1; }
 fi
 
 exec pnpm start
