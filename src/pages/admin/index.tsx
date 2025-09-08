@@ -9,6 +9,9 @@ export default function AdminPage() {
   const router = useRouter();
   const { isLoading, isValid, user } = useAdminGuard();
 
+  // Always call hooks on every render; gate fetching with `enabled`
+  const listPostsQuery = trpc.listAdminPosts.useQuery(undefined, { enabled: !isLoading && isValid });
+
   // Show loading state while verifying token
   if (isLoading) {
     return (
@@ -24,8 +27,6 @@ export default function AdminPage() {
     localStorage.removeItem("sb-access-token");
     router.push("/login");
   };
-
-  const listPostsQuery = trpc.listAdminPosts.useQuery();
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 font-mono">
