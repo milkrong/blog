@@ -18,6 +18,7 @@ import { Label } from "../../../components/ui/label";
 import { trpc } from "../../../utils/trpc";
 import EditorToolbar from "../../../components/EditorToolbar";
 import { useAdminGuard } from "../../../lib/admin-guard";
+import { Loading } from "../../../components/Loading";
 
 export default function AdminEditPage() {
     const router = useRouter();
@@ -73,9 +74,7 @@ export default function AdminEditPage() {
     return (
         <div className="max-w-6xl mx-auto px-4 py-8 space-y-6 font-mono">
             {isLoading ? (
-                <div className="text-center">
-                    <p className="text-lg">验证中...</p>
-                </div>
+                <Loading message="验证中..." />
             ) : (
                 <>
                     <div className="flex items-center justify-between">

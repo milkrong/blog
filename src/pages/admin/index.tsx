@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { trpc } from "../../utils/trpc";
 import { PixelButton } from "../../components/PixelButton";
 import { useAdminGuard } from "../../lib/admin-guard";
+import { Loading } from "../../components/Loading";
 
 
 export default function AdminPage() {
@@ -14,13 +15,7 @@ export default function AdminPage() {
 
   // Show loading state while verifying token
   if (isLoading) {
-    return (
-      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 font-mono">
-        <div className="text-center">
-          <p className="text-lg">验证中...</p>
-        </div>
-      </div>
-    );
+    return <Loading message="验证中..." />;
   }
 
   const handleSignOut = () => {
