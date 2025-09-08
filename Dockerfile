@@ -93,7 +93,7 @@ else
   fi
   
   echo 'Running database migrations (drizzle-kit)...'
-  pnpm drizzle-kit generate || { echo 'Migrations failed'; exit 1; }
+  pnpm drizzle-kit migrate || { echo 'Migrations failed'; exit 1; }
 fi
 
 exec pnpm start
