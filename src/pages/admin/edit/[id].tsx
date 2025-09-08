@@ -19,6 +19,7 @@ import { trpc } from "../../../utils/trpc";
 import EditorToolbar from "../../../components/EditorToolbar";
 import { useAdminGuard } from "../../../lib/admin-guard";
 import { Skeleton } from "../../../components/ui/skeleton";
+import React from "react";
 
 export default function AdminEditPage() {
     const router = useRouter();
@@ -39,6 +40,10 @@ export default function AdminEditPage() {
     const [title, setTitle] = useState("");
     const [category, setCategory] = useState("");
     const [tags, setTags] = useState("");
+    const [coverUrl, setCoverUrl] = useState("");
+    const [coverUploading, setCoverUploading] = useState(false);
+    const [coverProgress, setCoverProgress] = useState(0);
+    const getUploadUrl = trpc.r2GetUploadUrl.useMutation();
 
     const editor = useEditor({
         extensions: [
@@ -55,6 +60,7 @@ export default function AdminEditPage() {
         if (current) {
             setTitle(current.title || "");
             editor?.commands.setContent(current.content || "");
+            setCoverUrl((current as any).cover || "");
         }
     }, [current, editor]);
 
@@ -66,6 +72,7 @@ export default function AdminEditPage() {
             id,
             title,
             content: editor?.getHTML() || "",
+            cover: coverUrl || undefined,
             status: publish ? "published" : "draft",
         });
         router.push("/admin");
@@ -121,6 +128,60 @@ export default function AdminEditPage() {
                                 <div className="space-y-2">
                                     <Label htmlFor="title">标题</Label>
                                     <PixelInput id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="cover">封面</Label>
+                                    <div className="flex items-center gap-3">
+                                        <PixelInput
+                                            id="cover"
+                                            value={coverUrl}
+                                            placeholder="https://..."
+                                            onChange={(e) => setCoverUrl(e.target.value)}
+                                        />
+                                        <PixelButton
+                                            variant="secondary"
+                                            size="sm"
+                                            disabled={coverUploading}
+                                            onClick={async () => {
+                                                const input = document.createElement('input');
+                                                input.type = 'file';
+                                                input.accept = 'image/*';
+                                                input.onchange = async () => {
+                                                    const file = input.files?.[0];
+                                                    if (!file) return;
+                                                    try {
+                                                        setCoverUploading(true);
+                                                        setCoverProgress(0);
+                                                        const { uploadUrl, publicUrl } = await getUploadUrl.mutateAsync({ filename: file.name, contentType: file.type || 'application/octet-stream' });
+                                                        await new Promise<void>((resolve, reject) => {
+                                                            const xhr = new XMLHttpRequest();
+                                                            xhr.open('PUT', uploadUrl, true);
+                                                            xhr.setRequestHeader('content-type', file.type || 'application/octet-stream');
+                                                            xhr.upload.onprogress = (evt) => {
+                                                                if (evt.lengthComputable) {
+                                                                    const pct = Math.round((evt.loaded / evt.total) * 100);
+                                                                    setCoverProgress(pct);
+                                                                }
+                                                            };
+                                                            xhr.onload = () => {
+                                                                if (xhr.status >= 200 && xhr.status < 300) resolve(); else reject(new Error('Upload failed'));
+                                                            };
+                                                            xhr.onerror = () => reject(new Error('Network error'));
+                                                            xhr.send(file);
+                                                        });
+                                                        setCoverUrl(publicUrl);
+                                                    } finally {
+                                                        setCoverUploading(false);
+                                                    }
+                                                };
+                                                input.click();
+                                            }}
+                                        >{coverUploading ? `上传中 ${coverProgress}%` : '上传图片'}</PixelButton>
+                                    </div>
+                                    {coverUrl && (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img src={coverUrl} alt="cover" className="mt-2 h-40 w-full object-cover border-4 border-gray-800" />
+                                    )}
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="space-y-2">

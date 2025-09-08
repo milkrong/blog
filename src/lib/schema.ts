@@ -40,6 +40,7 @@ export const posts = pgTable("posts", {
   slug: text("slug").notNull(),
   title: text("title").notNull(),
   description: text("description"),
+  cover: text("cover"),
   content: text("content"),
   createdAt: timestamp("created_at").defaultNow(),
   status: text("status").notNull().default("draft"), // draft | published

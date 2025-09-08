@@ -98,13 +98,14 @@ export const appRouter = t.router({
       z.object({
         title: z.string().min(1),
         content: z.string().optional().default(""),
+        cover: z.string().url().optional(),
         category: z.string().optional(),
         tags: z.array(z.string()).optional().default([]),
         status: z.enum(["draft", "published"]).optional().default("draft"),
       })
     )
     .mutation(async ({ input }) => {
-      const { title, content, category, tags: tagNames, status } = input;
+      const { title, content, cover, category, tags: tagNames, status } = input;
       const slugBase = title
         .trim()
         .toLowerCase()
@@ -146,12 +147,13 @@ export const appRouter = t.router({
 
         const insertedPost = await tx
           .insert(posts)
-          .values({ title, content, slug, categoryId, status })
+          .values({ title, content, slug, categoryId, status, cover })
           .returning({
             id: posts.id,
             title: posts.title,
             slug: posts.slug,
             content: posts.content,
+            cover: posts.cover,
             categoryId: posts.categoryId,
             createdAt: posts.createdAt,
             status: posts.status,
@@ -221,6 +223,7 @@ export const appRouter = t.router({
         id: z.number(),
         title: z.string().min(1).optional(),
         content: z.string().optional(),
+        cover: z.string().url().optional().or(z.literal("").transform(v => undefined)),
         status: z.enum(["draft", "published"]).optional(),
       })
     )
