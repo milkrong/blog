@@ -8,8 +8,9 @@ services:
       - POSTGRES_DB=postgres
     volumes:
       - pgdata:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    # Uncomment the next line if you need direct database access
+    # ports:
+    #   - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 10s
@@ -37,8 +38,6 @@ services:
     networks:
       - blog_network
     restart: unless-stopped
-    ports:
-      - "3000:3000"
 
 networks:
   blog_network:
