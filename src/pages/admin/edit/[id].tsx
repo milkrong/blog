@@ -77,6 +77,24 @@ export default function AdminEditPage() {
         });
     };
 
+    // keyboard shortcuts
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+            const mod = isMac ? e.metaKey : e.ctrlKey;
+            if (mod && e.key.toLowerCase() === "s") {
+                e.preventDefault();
+                handleUpdate(false);
+            }
+            if (mod && (e.key === "Enter")) {
+                e.preventDefault();
+                handleUpdate(true);
+            }
+        };
+        window.addEventListener("keydown", handler);
+        return () => window.removeEventListener("keydown", handler);
+    }, [id, title, editor]);
+
     return (
         <div className="max-w-6xl mx-auto px-4 py-8 space-y-6 font-mono">
             {isLoading ? (
@@ -199,10 +217,10 @@ export default function AdminEditPage() {
                                 </div>
                                 <div className="flex gap-3">
                                     <PixelButton disabled={updatePostMutation.isPending} onClick={() => handleUpdate(false)}>
-                                        {updatePostMutation.isPending ? "保存中..." : "保存草稿"}
+                                        {updatePostMutation.isPending ? "保存中..." : "保存草稿 (⌘/Ctrl+S)"}
                                     </PixelButton>
                                     <PixelButton variant="secondary" disabled={updatePostMutation.isPending} onClick={() => handleUpdate(true)}>
-                                        {updatePostMutation.isPending ? "发布中..." : "发布"}
+                                        {updatePostMutation.isPending ? "发布中..." : "发布 (⌘/Ctrl+Enter)"}
                                     </PixelButton>
                                     <PixelButton variant="secondary" onClick={() => router.push("/admin")}>
                                         返回列表

@@ -193,10 +193,10 @@ export default function AdminNewPage() {
                         </div>
                         <div className="flex gap-3">
                             <PixelButton disabled={createPostMutation.isPending} onClick={() => handleCreate(false)}>
-                                {createPostMutation.isPending ? "保存中..." : "保存(草稿)"}
+                                {createPostMutation.isPending ? "保存中..." : "保存(草稿) (⌘/Ctrl+S)"}
                             </PixelButton>
                             <PixelButton variant="secondary" disabled={createPostMutation.isPending} onClick={() => handleCreate(true)}>
-                                {createPostMutation.isPending ? "发布中..." : "发布"}
+                                {createPostMutation.isPending ? "发布中..." : "发布 (⌘/Ctrl+Enter)"}
                             </PixelButton>
                             <PixelButton variant="secondary" onClick={() => router.push("/admin")}>
                                 返回列表
