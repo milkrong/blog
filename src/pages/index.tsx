@@ -49,7 +49,7 @@ export default function Home() {
                   : ""
               }
               category={post.category?.name || "未分类"}
-              imageUrl="/placeholder.png"
+              imageUrl={(post as any).cover || "/placeholder.png"}
               readTime="约 3 分钟"
             />
           ))}
