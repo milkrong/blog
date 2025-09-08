@@ -22,6 +22,13 @@ import { initTRPC } from "@trpc/server";
 
 const t = initTRPC.create();
 
+function extractFirstImageUrl(html: string | undefined | null): string | undefined {
+  if (!html) return undefined;
+  const imgMatch = html.match(/<img[^>]*src=["']([^"']+)["'][^>]*>/i);
+  if (imgMatch && imgMatch[1]) return imgMatch[1];
+  return undefined;
+}
+
 export const appRouter = t.router({
   posts: publicProcedure.query(
     async (): Promise<
@@ -145,9 +152,11 @@ export const appRouter = t.router({
           }
         }
 
+        const derivedCover = cover || extractFirstImageUrl(content);
+
         const insertedPost = await tx
           .insert(posts)
-          .values({ title, content, slug, categoryId, status, cover })
+          .values({ title, content, slug, categoryId, status, cover: derivedCover })
           .returning({
             id: posts.id,
             title: posts.title,
@@ -229,9 +238,21 @@ export const appRouter = t.router({
     )
     .mutation(async ({ input }) => {
       const { id, ...rest } = input;
+
+      const existing = await db.query.posts.findFirst({ where: (p, { eq: eq2 }) => eq2(p.id, id) });
+
+      const updateData: any = { ...rest };
+      if ((rest.cover === undefined || rest.cover === (undefined as any)) && rest.content !== undefined) {
+        const currentCover = (existing as any)?.cover as string | null | undefined;
+        if (!currentCover) {
+          const derived = extractFirstImageUrl(rest.content as string);
+          if (derived) updateData.cover = derived;
+        }
+      }
+
       const updated = await db
         .update(posts)
-        .set(rest)
+        .set(updateData)
         .where(eq(posts.id, id))
         .returning({
           id: posts.id,
