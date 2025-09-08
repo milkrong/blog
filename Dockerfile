@@ -47,9 +47,40 @@ if [ -z "$DATABASE_URL" ]; then
   echo 'DATABASE_URL is not set; skipping migrations'
 else
   echo 'Waiting for database to be ready...'
-  until pg_isready -d "$DATABASE_URL" >/dev/null 2>&1; do
-    sleep 1
+  
+  # Parse DATABASE_URL to extract connection parameters
+  # Format: postgresql://user:password@host:port/database
+  DB_URL="$DATABASE_URL"
+  DB_HOST=$(echo "$DB_URL" | sed 's/.*@\([^:]*\):.*/\1/')
+  DB_PORT=$(echo "$DB_URL" | sed 's/.*:\([0-9]*\)\/.*/\1/')
+  DB_USER=$(echo "$DB_URL" | sed 's/.*:\/\/\([^:]*\):.*/\1/')
+  DB_NAME=$(echo "$DB_URL" | sed 's/.*\/\([^?]*\).*/\1/')
+  
+  # Set defaults if parsing failed
+  DB_HOST=${DB_HOST:-db}
+  DB_PORT=${DB_PORT:-5432}
+  DB_USER=${DB_USER:-postgres}
+  DB_NAME=${DB_NAME:-postgres}
+  
+  echo "Checking database connection: $DB_HOST:$DB_PORT as $DB_USER"
+  
+  # Wait for database with timeout (max 60 seconds)
+  TIMEOUT=60
+  ELAPSED=0
+  until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" >/dev/null 2>&1; do
+    if [ $ELAPSED -ge $TIMEOUT ]; then
+      echo "Database connection timeout after ${TIMEOUT}s"
+      echo "Database may not be ready or connection parameters are incorrect"
+      echo "DB_HOST: $DB_HOST, DB_PORT: $DB_PORT, DB_USER: $DB_USER, DB_NAME: $DB_NAME"
+      exit 1
+    fi
+    echo "Database not ready yet, waiting... (${ELAPSED}s/${TIMEOUT}s)"
+    sleep 2
+    ELAPSED=$((ELAPSED + 2))
   done
+  
+  echo "Database is ready!"
+  
   if [ ! -f ./drizzle.config.ts ]; then
     echo 'drizzle.config.ts not found; creating one dynamically'
     echo 'import { defineConfig } from "drizzle-kit";' > ./drizzle.config.ts
@@ -60,6 +91,7 @@ else
     echo '  dbCredentials: { url: process.env.DATABASE_URL! },' >> ./drizzle.config.ts
     echo '});' >> ./drizzle.config.ts
   fi
+  
   echo 'Running database migrations (drizzle-kit)...'
   pnpm drizzle-kit generate || { echo 'Migrations failed'; exit 1; }
 fi
