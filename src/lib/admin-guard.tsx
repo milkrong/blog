@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { trpc } from '../utils/trpc';
 
 export function useAdminGuard() {
   const router = useRouter();
+  const [shouldRedirect, setShouldRedirect] = useState(false);
   const token = typeof window !== 'undefined' ? localStorage.getItem('sb-access-token') : null;
 
   // Server-side token verification with React Query caching
@@ -19,7 +20,7 @@ export function useAdminGuard() {
 
   useEffect(() => {
     if (!token) {
-      router.push('/login');
+      setShouldRedirect(true);
       return;
     }
 
@@ -31,13 +32,20 @@ export function useAdminGuard() {
     if (error || !tokenResult?.valid) {
       // Token verification failed
       localStorage.removeItem('sb-access-token');
-      router.push('/login');
+      setShouldRedirect(true);
       return;
     }
 
     // Token is valid, user can access admin pages
     console.log('Token verified for user:', tokenResult.user?.email);
-  }, [token, tokenResult, isLoading, error, router]);
+  }, [token, tokenResult, isLoading, error]);
+
+  // Handle redirect in a separate effect
+  useEffect(() => {
+    if (shouldRedirect) {
+      router.push('/login');
+    }
+  }, [shouldRedirect, router]);
 
   return { isLoading, isValid: tokenResult?.valid, user: tokenResult?.user };
 }
