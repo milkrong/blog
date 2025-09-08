@@ -15,9 +15,10 @@ Your blog system now has comprehensive security measures to protect your admin r
 
 #### **Authentication & Authorization**
 - **JWT Tokens**: Secure, signed tokens with 7-day expiration
-- **Server-Side Validation**: All admin endpoints verify tokens on the server
+- **Server-Side Validation**: All admin endpoints verify tokens on the server with proper JWT signature verification
+- **Database User Verification**: Server validates token and checks user exists in database
 - **Token Expiration**: Automatic logout when tokens expire
-- **Admin Guards**: Client-side route protection with server validation
+- **Admin Guards**: Client-side route protection (UX only) + server-side security validation
 
 #### **Protected Endpoints**
 - `createPost` - Requires admin authentication
@@ -30,6 +31,7 @@ Your blog system now has comprehensive security measures to protect your admin r
 - `posts` - Public blog posts (no auth required)
 - `authLogin` - Login endpoint
 - `authRegister` - Registration endpoint
+- `verifyToken` - Token verification endpoint (server-side validation)
 
 ### 🔧 **Environment Setup**
 
@@ -59,16 +61,34 @@ R2_PUBLIC_BASE_URL=https://your-domain.com
    - Token stored in localStorage
 
 2. **Admin Access**:
-   - All admin pages check for valid token
+   - Client-side guard checks token exists and isn't expired (UX only)
    - tRPC client sends token in Authorization header
-   - Server validates token on every admin request
-   - Invalid/expired tokens redirect to login
+   - **Server validates JWT signature** using JWT_SECRET
+   - **Server verifies user exists** in database
+   - Invalid/expired tokens return 401 Unauthorized
+   - Client redirects to login on 401 errors
 
-3. **Token Security**:
+3. **Security Architecture**:
+   ```
+   Client Side (UX + Server Call)    Server Side (Real Security)
+   ┌─────────────────────────────┐   ┌─────────────────────────────┐
+   │ 1. Check token exists       │   │ 3. verifyToken tRPC call    │
+   │ 2. Call verifyToken API     │──►│    - Verify JWT signature   │
+   │ 3. Show loading state       │   │    - Check user in database │
+   │ 4. Handle validation result │   │    - Return user info        │
+   │ 5. Redirect if invalid      │   │                             │
+   └─────────────────────────────┘   └─────────────────────────────┘
+   
+   🔒 All security validation happens on the server via tRPC
+   📡 Client calls server API for token verification
+   ⚡ React Query caching reduces server calls
+   ```
+
+4. **Token Security**:
    - Tokens are signed with your JWT_SECRET
    - Tokens expire after 7 days
    - Tokens contain user ID and email
-   - Server validates tokens on every request
+   - Server validates tokens on every request with signature verification
 
 ### 🔍 **Security Testing**
 

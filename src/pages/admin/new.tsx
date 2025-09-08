@@ -21,7 +21,18 @@ import { useAdminGuard } from "../../lib/admin-guard";
 
 export default function AdminNewPage() {
     const router = useRouter();
-    useAdminGuard();
+    const { isLoading } = useAdminGuard();
+
+    // Show loading state while verifying token
+    if (isLoading) {
+        return (
+            <div className="max-w-6xl mx-auto px-4 py-8 space-y-6 font-mono">
+                <div className="text-center">
+                    <p className="text-lg">验证中...</p>
+                </div>
+            </div>
+        );
+    }
     const [title, setTitle] = useState("");
     const [category, setCategory] = useState("");
     const [tags, setTags] = useState("");

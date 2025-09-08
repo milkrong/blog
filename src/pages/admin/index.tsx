@@ -7,7 +7,18 @@ import { useAdminGuard } from "../../lib/admin-guard";
 
 export default function AdminPage() {
   const router = useRouter();
-  useAdminGuard();
+  const { isLoading, isValid, user } = useAdminGuard();
+
+  // Show loading state while verifying token
+  if (isLoading) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 font-mono">
+        <div className="text-center">
+          <p className="text-lg">验证中...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSignOut = () => {
     localStorage.removeItem("sb-access-token");

@@ -16,7 +16,7 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { globalCache } from "../lib/cache";
 import { publicProcedure, protectedProcedure, adminProcedure } from "../lib/trpc-middleware";
-import { generateToken } from "../lib/auth";
+import { generateToken, getUserFromToken } from "../lib/auth";
 import { REGISTRATION_SECRET, REGISTRATION_ENABLED } from "../lib/security";
 import { initTRPC } from "@trpc/server";
 
@@ -270,6 +270,22 @@ export const appRouter = t.router({
       // Generate proper JWT token
       const token = generateToken({ id: user.id, email: user.email });
       return { user: { id: user.id, email: user.email }, token };
+    }),
+  verifyToken: publicProcedure
+    .input(z.object({ token: z.string() }))
+    .query(async ({ input }) => {
+      const { token } = input;
+      
+      try {
+        const user = await getUserFromToken(token);
+        if (!user) {
+          return { valid: false, user: null };
+        }
+        
+        return { valid: true, user };
+      } catch (error) {
+        return { valid: false, user: null };
+      }
     }),
   r2GetUploadUrl: adminProcedure
     .input(
