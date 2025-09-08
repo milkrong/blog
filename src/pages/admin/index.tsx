@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { trpc } from "../../utils/trpc";
 import { PixelButton } from "../../components/PixelButton";
 import { useAdminGuard } from "../../lib/admin-guard";
+import { Skeleton } from "../../components/ui/skeleton";
 
 
 export default function AdminPage() {
@@ -12,12 +13,41 @@ export default function AdminPage() {
   // Always call hooks on every render; gate fetching with `enabled`
   const listPostsQuery = trpc.listAdminPosts.useQuery(undefined, { enabled: !isLoading && isValid });
 
-  // Show loading state while verifying token
+  // Unified loading state (verification/loading)
   if (isLoading) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 font-mono">
-        <div className="text-center">
-          <p className="text-lg">验证中...</p>
+        <div className="flex items-center justify-between gap-4">
+          <Skeleton className="h-8 w-40" />
+          <div className="flex gap-3">
+            <Skeleton className="h-9 w-16" />
+            <Skeleton className="h-9 w-16" />
+          </div>
+        </div>
+        <div className="bg-white border-4 border-gray-800 shadow-[6px_6px_0_0_#1f2937] p-6 overflow-x-auto">
+          <Skeleton className="h-6 w-32 mb-4" />
+          <table className="w-full text-xs sm:text-sm border-collapse">
+            <thead>
+              <tr className="border-b">
+                <th className="py-2 pr-2 text-left">ID</th>
+                <th className="py-2 pr-2 text-left">标题</th>
+                <th className="py-2 pr-2 text-left">状态</th>
+                <th className="py-2 pr-2 text-left">创建时间</th>
+                <th className="py-2 pr-2 text-left">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i} className="border-b last:border-0">
+                  <td className="py-2 pr-2 align-top"><Skeleton className="h-4 w-12" /></td>
+                  <td className="py-2 pr-2 align-top"><Skeleton className="h-4 w-48" /></td>
+                  <td className="py-2 pr-2 align-top"><Skeleton className="h-5 w-20" /></td>
+                  <td className="py-2 pr-2 align-top"><Skeleton className="h-4 w-24" /></td>
+                  <td className="py-2 pr-2 align-top"><Skeleton className="h-8 w-14" /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     );
@@ -50,11 +80,16 @@ export default function AdminPage() {
             </tr>
           </thead>
           <tbody>
-            {listPostsQuery.isLoading && (
-              <tr>
-                <td colSpan={5} className="py-4 text-center text-gray-500">加载中...</td>
-              </tr>
-            )}
+            {listPostsQuery.isLoading &&
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i} className="border-b last:border-0">
+                  <td className="py-2 pr-2 align-top"><Skeleton className="h-4 w-12" /></td>
+                  <td className="py-2 pr-2 align-top"><Skeleton className="h-4 w-48" /></td>
+                  <td className="py-2 pr-2 align-top"><Skeleton className="h-5 w-20" /></td>
+                  <td className="py-2 pr-2 align-top"><Skeleton className="h-4 w-24" /></td>
+                  <td className="py-2 pr-2 align-top"><Skeleton className="h-8 w-14" /></td>
+                </tr>
+              ))}
             {listPostsQuery.data?.length === 0 && !listPostsQuery.isLoading && (
               <tr>
                 <td colSpan={5} className="py-4 text-center text-gray-500">暂无数据</td>

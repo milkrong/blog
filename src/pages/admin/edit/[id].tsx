@@ -18,6 +18,7 @@ import { Label } from "../../../components/ui/label";
 import { trpc } from "../../../utils/trpc";
 import EditorToolbar from "../../../components/EditorToolbar";
 import { useAdminGuard } from "../../../lib/admin-guard";
+import { Skeleton } from "../../../components/ui/skeleton";
 
 export default function AdminEditPage() {
     const router = useRouter();
@@ -73,9 +74,38 @@ export default function AdminEditPage() {
     return (
         <div className="max-w-6xl mx-auto px-4 py-8 space-y-6 font-mono">
             {isLoading ? (
-                <div className="text-center">
-                    <p className="text-lg">验证中...</p>
-                </div>
+                <>
+                    <div className="flex items-center justify-between">
+                        <Skeleton className="h-8 w-40" />
+                        <div className="flex gap-3">
+                            <Skeleton className="h-8 w-16" />
+                        </div>
+                    </div>
+                    <div className="bg-white border-4 border-gray-800 shadow-[6px_6px_0_0_#1f2937] p-6 space-y-6">
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-16" />
+                            <Skeleton className="h-10 w-full" />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                                <Skeleton className="h-4 w-16" />
+                                <Skeleton className="h-10 w-full" />
+                            </div>
+                            <div className="space-y-2 md:col-span-2">
+                                <Skeleton className="h-4 w-24" />
+                                <Skeleton className="h-10 w-full" />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-16" />
+                            <Skeleton className="h-[500px] w-full" />
+                        </div>
+                        <div className="flex gap-3">
+                            <Skeleton className="h-9 w-24" />
+                            <Skeleton className="h-9 w-24" />
+                        </div>
+                    </div>
+                </>
             ) : (
                 <>
                     <div className="flex items-center justify-between">
