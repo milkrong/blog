@@ -75,7 +75,6 @@ export default function AdminEditPage() {
             cover: coverUrl || undefined,
             status: publish ? "published" : "draft",
         });
-        router.push("/admin");
     };
 
     return (
@@ -204,6 +203,9 @@ export default function AdminEditPage() {
                                     </PixelButton>
                                     <PixelButton variant="secondary" disabled={updatePostMutation.isPending} onClick={() => handleUpdate(true)}>
                                         {updatePostMutation.isPending ? "发布中..." : "发布"}
+                                    </PixelButton>
+                                    <PixelButton variant="secondary" onClick={() => router.push("/admin")}>
+                                        返回列表
                                     </PixelButton>
                                 </div>
                                 {updatePostMutation.error && (

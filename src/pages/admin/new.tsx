@@ -56,7 +56,6 @@ export default function AdminNewPage() {
 
     const handleCreate = async (publish: boolean) => {
         await createPostMutation.mutateAsync(buildPayload(publish));
-        router.push("/admin");
     };
 
     // keyboard shortcuts
@@ -198,6 +197,9 @@ export default function AdminNewPage() {
                             </PixelButton>
                             <PixelButton variant="secondary" disabled={createPostMutation.isPending} onClick={() => handleCreate(true)}>
                                 {createPostMutation.isPending ? "发布中..." : "发布"}
+                            </PixelButton>
+                            <PixelButton variant="secondary" onClick={() => router.push("/admin")}>
+                                返回列表
                             </PixelButton>
                         </div>
                         {createPostMutation.error && (
