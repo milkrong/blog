@@ -5,11 +5,13 @@ import { trpc } from "../utils/trpc";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { REGISTRATION_ENABLED } from "../lib/security";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [secret, setSecret] = useState("");
   const [error, setError] = useState("");
   const [mode, setMode] = useState<"login" | "register">("login");
   const [loading, setLoading] = useState(false);
@@ -23,7 +25,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       if (mode === "register") {
-        await registerMutation.mutateAsync({ email, password });
+        await registerMutation.mutateAsync({ email, password, secret });
         // For now simply redirect to login mode after successful registration
         setMode("login");
         setError("Registered successfully, please login.");
@@ -112,6 +114,22 @@ export default function LoginPage() {
                 required
               />
             </div>
+            {mode === "register" && (
+              <div className="space-y-2">
+                <Label htmlFor="secret">注册密钥</Label>
+                <Input
+                  id="secret"
+                  type="password"
+                  value={secret}
+                  onChange={(e) => setSecret(e.target.value)}
+                  placeholder="输入注册密钥"
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  需要正确的注册密钥才能创建账号
+                </p>
+              </div>
+            )}
             <Button disabled={loading} type="submit" className="w-full">
               {loading
                 ? mode === "login"
@@ -122,25 +140,27 @@ export default function LoginPage() {
                 : "创建账号"}
             </Button>
           </form>
-          <div className="text-center text-sm">
-            {mode === "login" ? (
-              <button
-                type="button"
-                onClick={() => setMode("register")}
-                className="text-primary underline-offset-4 hover:underline"
-              >
-                还没有账号？注册
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setMode("login")}
-                className="text-primary underline-offset-4 hover:underline"
-              >
-                已有账号？登录
-              </button>
-            )}
-          </div>
+          {REGISTRATION_ENABLED && (
+            <div className="text-center text-sm">
+              {mode === "login" ? (
+                <button
+                  type="button"
+                  onClick={() => setMode("register")}
+                  className="text-primary underline-offset-4 hover:underline"
+                >
+                  还没有账号？注册
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setMode("login")}
+                  className="text-primary underline-offset-4 hover:underline"
+                >
+                  已有账号？登录
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

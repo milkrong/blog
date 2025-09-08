@@ -17,20 +17,17 @@ import { PixelInput } from "../../../components/PixelInput";
 import { Label } from "../../../components/ui/label";
 import { trpc } from "../../../utils/trpc";
 import EditorToolbar from "../../../components/EditorToolbar";
+import { useAdminGuard } from "../../../lib/admin-guard";
 
 export default function AdminEditPage() {
     const router = useRouter();
+    useAdminGuard();
     const id = useMemo(() => {
         const raw = router.query.id;
         if (!raw) return null;
         const n = Array.isArray(raw) ? parseInt(raw[0], 10) : parseInt(raw, 10);
         return Number.isFinite(n) ? n : null;
     }, [router.query.id]);
-
-    useEffect(() => {
-        const token = typeof window !== "undefined" ? localStorage.getItem("sb-access-token") : null;
-        if (!token) router.push("/login");
-    }, [router]);
 
     const listPostsQuery = trpc.listAdminPosts.useQuery();
     const current = listPostsQuery.data?.find((p: any) => p.id === id);

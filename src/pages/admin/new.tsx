@@ -17,9 +17,11 @@ import { PixelInput } from "../../components/PixelInput";
 import { Label } from "../../components/ui/label";
 import { trpc } from "../../utils/trpc";
 import EditorToolbar from "../../components/EditorToolbar";
+import { useAdminGuard } from "../../lib/admin-guard";
 
 export default function AdminNewPage() {
     const router = useRouter();
+    useAdminGuard();
     const [title, setTitle] = useState("");
     const [category, setCategory] = useState("");
     const [tags, setTags] = useState("");
@@ -33,11 +35,6 @@ export default function AdminNewPage() {
         content: "",
         immediatelyRender: false,
     });
-
-    useEffect(() => {
-        const token = typeof window !== "undefined" ? localStorage.getItem("sb-access-token") : null;
-        if (!token) router.push("/login");
-    }, [router]);
 
     const utils = trpc.useUtils?.() as any;
     const createPostMutation = trpc.createPost.useMutation({

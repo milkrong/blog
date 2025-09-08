@@ -1,4 +1,3 @@
-import { initTRPC } from "@trpc/server";
 import { db } from "../lib/db";
 import {
   Post,
@@ -16,11 +15,15 @@ import bcrypt from "bcryptjs";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { globalCache } from "../lib/cache";
+import { publicProcedure, protectedProcedure, adminProcedure } from "../lib/trpc-middleware";
+import { generateToken } from "../lib/auth";
+import { REGISTRATION_SECRET, REGISTRATION_ENABLED } from "../lib/security";
+import { initTRPC } from "@trpc/server";
 
 const t = initTRPC.create();
 
 export const appRouter = t.router({
-  posts: t.procedure.query(
+  posts: publicProcedure.query(
     async (): Promise<
       (Post & { category: Category | null; tags: Tag[] })[]
     > => {
@@ -55,15 +58,27 @@ export const appRouter = t.router({
       return result;
     }
   ),
-  authRegister: t.procedure
+  authRegister: publicProcedure
     .input(
       z.object({
         email: z.string().email(),
         password: z.string().min(6, "Password must be at least 6 characters"),
+        secret: z.string().min(1, "Registration secret is required"),
       })
     )
     .mutation(async ({ input }) => {
-      const { email, password } = input;
+      const { email, password, secret } = input;
+      
+      // Check if registration is enabled
+      if (!REGISTRATION_ENABLED) {
+        throw new Error("Registration is currently disabled");
+      }
+      
+      // Verify registration secret
+      if (secret !== REGISTRATION_SECRET) {
+        throw new Error("Invalid registration secret");
+      }
+      
       // check existing
       const existing = await db.query.users.findFirst({
         where: (u, { eq }) => eq(u.email, email),
@@ -78,7 +93,7 @@ export const appRouter = t.router({
         .returning({ id: users.id, email: users.email });
       return { user: inserted[0] };
     }),
-  createPost: t.procedure
+  createPost: adminProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -191,7 +206,7 @@ export const appRouter = t.router({
         };
       });
     }),
-  listAdminPosts: t.procedure.query(async () => {
+  listAdminPosts: adminProcedure.query(async () => {
     try {
       const rows = await db.select().from(posts);
       return rows;
@@ -200,7 +215,7 @@ export const appRouter = t.router({
       return [];
     }
   }),
-  updatePost: t.procedure
+  updatePost: adminProcedure
     .input(
       z.object({
         id: z.number(),
@@ -223,7 +238,7 @@ export const appRouter = t.router({
         });
       return { post: updated[0] };
     }),
-  updatePostStatus: t.procedure
+  updatePostStatus: adminProcedure
     .input(z.object({ id: z.number(), status: z.enum(["draft", "published"]) }))
     .mutation(async ({ input }) => {
       const updated = await db
@@ -233,7 +248,7 @@ export const appRouter = t.router({
         .returning({ id: posts.id, status: posts.status });
       return { post: updated[0] };
     }),
-  authLogin: t.procedure
+  authLogin: publicProcedure
     .input(
       z.object({
         email: z.string().email(),
@@ -252,11 +267,11 @@ export const appRouter = t.router({
       if (!valid) {
         throw new Error("Invalid email or password");
       }
-      // For now just return a placeholder token (could integrate JWT later)
-      const token = `local-${user.id}`;
+      // Generate proper JWT token
+      const token = generateToken({ id: user.id, email: user.email });
       return { user: { id: user.id, email: user.email }, token };
     }),
-  r2GetUploadUrl: t.procedure
+  r2GetUploadUrl: adminProcedure
     .input(
       z.object({
         filename: z.string().min(1),

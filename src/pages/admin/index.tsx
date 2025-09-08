@@ -2,15 +2,12 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { trpc } from "../../utils/trpc";
 import { PixelButton } from "../../components/PixelButton";
+import { useAdminGuard } from "../../lib/admin-guard";
 
 
 export default function AdminPage() {
   const router = useRouter();
-
-  useEffect(() => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("sb-access-token") : null;
-    if (!token) router.push("/login");
-  }, [router]);
+  useAdminGuard();
 
   const handleSignOut = () => {
     localStorage.removeItem("sb-access-token");

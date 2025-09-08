@@ -19,7 +19,15 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   }));
   const [trpcClient] = React.useState(() =>
     trpc.createClient({
-      links: [httpBatchLink({ url: '/api/trpc' })],
+      links: [
+        httpBatchLink({
+          url: '/api/trpc',
+          headers() {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('sb-access-token') : null;
+            return token ? { authorization: `Bearer ${token}` } : {};
+          },
+        }),
+      ],
     })
   );
 
