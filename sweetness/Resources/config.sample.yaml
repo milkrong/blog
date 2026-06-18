@@ -1,0 +1,31 @@
+# Sample Mihomo (Clash.Meta) configuration for local development.
+# Sweetness copies the *active profile* over this at runtime; this file only
+# exists so you can launch the core by hand while iterating on the UI.
+
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+
+# The external controller Sweetness talks to. Keep host/secret in sync with the
+# values under Settings → External Controller.
+external-controller: 127.0.0.1:9090
+secret: ""
+
+dns:
+  enable: true
+  nameserver:
+    - 223.5.5.5
+    - 8.8.8.8
+
+proxies: []
+
+proxy-groups:
+  - name: PROXY
+    type: select
+    proxies:
+      - DIRECT
+
+rules:
+  - GEOIP,CN,DIRECT
+  - MATCH,PROXY
