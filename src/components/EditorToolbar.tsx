@@ -70,7 +70,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 
     return (
         <>
-            <div className="sticky top-2 z-10 flex flex-wrap items-center gap-2 border-4 border-gray-800 bg-white p-2 shadow-[4px_4px_0_0_#1f2937]">
+            <div className="sticky top-2 z-10 flex flex-wrap items-center gap-2 border-4 border-[var(--ink)] bg-[var(--surface)] p-2 shadow-[4px_4px_0_0_var(--ink)]">
                 <div className="flex gap-2">
                     <PixelButton
                         variant="secondary"
@@ -97,7 +97,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
                         S
                     </PixelButton>
                 </div>
-                <span className="mx-2 h-5 w-px bg-gray-300" />
+                <span className="mx-2 h-5 w-px bg-[var(--surface-2)]" />
                 <div className="flex gap-2">
                     <PixelButton variant="secondary" size="sm" onClick={() => {
                         const url = prompt("输入链接地址:");
@@ -130,7 +130,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
                         H3
                     </PixelButton>
                 </div>
-                <span className="mx-2 h-5 w-px bg-gray-300" />
+                <span className="mx-2 h-5 w-px bg-[var(--surface-2)]" />
                 <div className="flex gap-2">
                     <PixelButton
                         variant="secondary"
@@ -165,7 +165,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
                         {'</>'}
                     </PixelButton>
                 </div>
-                <span className="mx-2 h-5 w-px bg-gray-300" />
+                <span className="mx-2 h-5 w-px bg-[var(--surface-2)]" />
                 <div className="flex gap-2">
                     <PixelButton title="撤销 (⌘/Ctrl+Z)" variant="secondary" size="sm" onClick={() => editor.chain().focus().undo().run()}>
                         Undo
@@ -175,7 +175,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
                     </PixelButton>
                 </div>
                 {uploading && (
-                    <span className="text-xs text-gray-600">上传中 {uploadProgress}%</span>
+                    <span className="text-xs text-[var(--fg-muted)]">上传中 {uploadProgress}%</span>
                 )}
                 {uploadError && (
                     <span className="text-xs text-red-600">
@@ -198,7 +198,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
                 footer={(
                     <>
                         <button
-                            className="font-mono px-3 py-1 border-2 bg-gray-300 border-gray-600 text-gray-900 shadow-[2px_2px_0_0_#1f2937]"
+                            className="font-mono px-3 py-1 border-2 bg-[var(--surface-2)] border-[var(--ink)] text-[var(--fg)] shadow-[2px_2px_0_0_var(--ink)]"
                             onClick={() => setImgModalOpen(false)}
                         >
                             取消
@@ -246,11 +246,11 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
                     <input
                         value={imgUrl}
                         onChange={(e) => setImgUrl(e.target.value)}
-                        className="w-full border-2 border-gray-800 px-3 py-2 font-mono shadow-[2px_2px_0_0_#1f2937]"
+                        className="w-full border-2 border-[var(--ink)] px-3 py-2 font-mono shadow-[2px_2px_0_0_var(--ink)]"
                         placeholder="https://..."
                     />
                     {uploading && (
-                        <div className="text-xs text-gray-600">上传中 {uploadProgress}%</div>
+                        <div className="text-xs text-[var(--fg-muted)]">上传中 {uploadProgress}%</div>
                     )}
                     {uploadError && (
                         <div className="text-xs text-red-600">{uploadError}</div>

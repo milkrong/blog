@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { PixelButton } from "./PixelButton";
+import { ThemeToggle } from "./ThemeToggle";
 
 type Props = {
   children: React.ReactNode;
@@ -8,31 +8,60 @@ type Props = {
 
 export default function Layout({ children }: Props) {
   return (
-    <div className="relative flex min-h-screen flex-col bg-[linear-gradient(180deg,#e2e8f0,#cbd5e1)]">
+    <div className="relative flex min-h-[100dvh] flex-col">
+      {/* graph-paper grid, theme-aware via --grid-line */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(31,41,55,0.05)_1px,transparent_1px),linear-gradient(180deg,rgba(31,41,55,0.05)_1px,transparent_1px)] [background-size:16px_16px]"
+        className="pointer-events-none fixed inset-0 -z-10 [background-size:18px_18px]"
+        style={{
+          backgroundImage:
+            "linear-gradient(90deg, var(--grid-line) 1px, transparent 1px), linear-gradient(180deg, var(--grid-line) 1px, transparent 1px)",
+        }}
       />
-      {/* Header */}
-      <header className="bg-white border-b-4 border-gray-800 shadow-[4px_4px_0_0_#1f2937]">
-        <div className="max-w-6xl mx-auto px-4 flex h-16 items-center justify-between">
+
+      {/* Header — single line, 64px */}
+      <header className="sticky top-0 z-40 border-b-[3px] border-[var(--ink)] bg-[var(--surface)]">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
           <Link
             href="/"
-            className="font-mono text-xl font-bold tracking-tight text-gray-900 hover:text-blue-600 transition-colors"
+            className="group inline-flex items-center gap-2 font-mono text-lg font-extrabold tracking-tight text-fg"
           >
-            milkrong blog
+            <span
+              aria-hidden
+              className="grid h-6 w-6 place-items-center border-2 border-[var(--ink)] bg-[var(--hi)] text-[var(--hi-ink)] text-[11px] font-black shadow-[2px_2px_0_0_var(--ink)]"
+            >
+              M
+            </span>
+            <span className="group-hover:text-accent transition-colors">
+              milkrong<span className="text-fg-muted">/blog</span>
+            </span>
           </Link>
+
+          <nav className="flex items-center gap-3 font-mono text-sm">
+            <a
+              href="https://github.com/milkrong"
+              target="_blank"
+              rel="noreferrer"
+              className="hidden sm:inline text-fg-muted hover:text-accent transition-colors"
+            >
+              GitHub
+            </a>
+            <ThemeToggle />
+          </nav>
         </div>
       </header>
 
       {/* Main content */}
       <main className="flex-1 py-10">
-        <div className="max-w-6xl mx-auto px-4 space-y-8">{children}</div>
+        <div className="mx-auto max-w-6xl space-y-10 px-4">{children}</div>
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto bg-white border-t-4 border-gray-800 shadow-[0_-4px_0_0_#1f2937] py-6 text-center text-sm font-mono text-gray-600">
-        © {new Date().getFullYear()} milkrong blog · Crafted in pixel style
+      <footer className="mt-auto border-t-[3px] border-[var(--ink)] bg-[var(--surface)]">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-6 font-mono text-sm text-fg-muted sm:flex-row">
+          <span>© {new Date().getFullYear()} milkrong blog</span>
+          <span className="text-xs">Built with Next.js, served in pixels.</span>
+        </div>
       </footer>
     </div>
   );

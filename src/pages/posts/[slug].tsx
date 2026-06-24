@@ -26,30 +26,59 @@ interface Props {
 }
 
 export default function PostPage({ post }: Props) {
-  console.log(post);
   return (
     <Layout>
-      <article>
-        <div className="mb-4">
+      <article className="mx-auto max-w-3xl">
+        <div className="mb-6">
           <Link
             href="/"
-            className="text-sm text-blue-600 hover:underline inline-flex items-center gap-1"
+            className="pixel-chip bg-[var(--surface)] text-fg-muted hover:text-accent active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
           >
-            <span aria-hidden>←</span> 返回
+            <span aria-hidden>←</span> 返回首页
           </Link>
         </div>
-        <h1 className="text-3xl font-bold mb-4">{post.frontMatter.title}</h1>
-        {post.createdDate && (
-          <p className="text-sm text-gray-500 mb-4">{post.createdDate}</p>
-        )}
-        {post.frontMatter.tags && post.frontMatter.tags.length > 0 && (
-          <div className="mb-4">
-            {post.frontMatter.tags.map((tag) => (
-              <Tag key={tag} tag={tag} />
-            ))}
+
+        {/* Title block */}
+        <header className="pixel-panel mb-8 p-6 md:p-8">
+          <div className="mb-4 flex flex-wrap items-center gap-3 font-mono text-xs text-fg-muted">
+            {post.frontMatter.category && (
+              <span className="pixel-chip bg-[var(--hi)] text-[var(--hi-ink)] font-bold">
+                {post.frontMatter.category}
+              </span>
+            )}
+            {post.createdDate && <time>{post.createdDate}</time>}
           </div>
-        )}
-        <div className="prose prose-slate max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />
+          <h1 className="font-mono text-3xl font-extrabold leading-tight tracking-tight text-fg md:text-4xl">
+            {post.frontMatter.title}
+          </h1>
+          {post.frontMatter.description && (
+            <p className="mt-3 text-base leading-relaxed text-fg-muted">
+              {post.frontMatter.description}
+            </p>
+          )}
+          {post.frontMatter.tags && post.frontMatter.tags.length > 0 && (
+            <div className="mt-5 flex flex-wrap">
+              {post.frontMatter.tags.map((tag) => (
+                <Tag key={tag} tag={tag} />
+              ))}
+            </div>
+          )}
+        </header>
+
+        {/* Body */}
+        <div
+          className="pixel-prose"
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
+
+        <div className="mt-12 border-t-[3px] border-dashed border-[var(--ink)] pt-6">
+          <Link
+            href="/"
+            className="pixel-chip bg-[var(--surface)] text-fg-muted hover:text-accent active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+          >
+            <span aria-hidden>←</span> 返回首页
+          </Link>
+        </div>
       </article>
     </Layout>
   );

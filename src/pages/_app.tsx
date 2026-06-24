@@ -4,7 +4,15 @@ import 'highlight.js/styles/github.css';
 import { trpc } from '../utils/trpc';
 import { httpBatchLink } from '@trpc/client';
 import { QueryClient, QueryClientProvider, HydrationBoundary } from '@tanstack/react-query';
+import { JetBrains_Mono } from 'next/font/google';
 import React from 'react';
+
+const mono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '700', '800'],
+  variable: '--font-mono',
+  display: 'swap',
+});
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [queryClient] = React.useState(() => new QueryClient({
@@ -35,7 +43,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <HydrationBoundary state={(pageProps as any)?.trpcState}>
-          <Component {...pageProps} />
+          <div className={`${mono.variable} contents`}>
+            <Component {...pageProps} />
+          </div>
         </HydrationBoundary>
       </QueryClientProvider>
     </trpc.Provider>

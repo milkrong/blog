@@ -24,7 +24,7 @@ export default function AdminPage() {
             <Skeleton className="h-9 w-16" />
           </div>
         </div>
-        <div className="bg-white border-4 border-gray-800 shadow-[6px_6px_0_0_#1f2937] p-6 overflow-x-auto">
+        <div className="bg-[var(--surface)] border-4 border-[var(--ink)] shadow-[6px_6px_0_0_var(--ink)] p-6 overflow-x-auto">
           <Skeleton className="h-6 w-32 mb-4" />
           <table className="w-full text-xs sm:text-sm border-collapse">
             <thead>
@@ -67,7 +67,7 @@ export default function AdminPage() {
           <PixelButton variant="secondary" onClick={handleSignOut}>退出</PixelButton>
         </div>
       </div>
-      <div className="bg-white border-4 border-gray-800 shadow-[6px_6px_0_0_#1f2937] p-6 overflow-x-auto">
+      <div className="bg-[var(--surface)] border-4 border-[var(--ink)] shadow-[6px_6px_0_0_var(--ink)] p-6 overflow-x-auto">
         <h2 className="text-xl font-bold mb-4">文章列表</h2>
         <table className="w-full text-xs sm:text-sm border-collapse">
           <thead>
@@ -92,7 +92,7 @@ export default function AdminPage() {
               ))}
             {listPostsQuery.data?.length === 0 && !listPostsQuery.isLoading && (
               <tr>
-                <td colSpan={5} className="py-4 text-center text-gray-500">暂无数据</td>
+                <td colSpan={5} className="py-4 text-center text-[var(--fg-muted)]">暂无数据</td>
               </tr>
             )}
             {listPostsQuery.data?.map((p: any) => (
@@ -100,14 +100,14 @@ export default function AdminPage() {
                 <td className="py-2 pr-2 align-top">{p.id}</td>
                 <td className="py-2 pr-2 align-top max-w-[240px] truncate">{p.title}</td>
                 <td className="py-2 pr-2 align-top">
-                  <span className={`inline-block border-2 px-2 py-0.5 text-xs shadow-[2px_2px_0_0_#1f2937] ${p.status === "published"
+                  <span className={`inline-block border-2 px-2 py-0.5 text-xs shadow-[2px_2px_0_0_var(--ink)] ${p.status === "published"
                     ? "bg-green-300 border-green-600 text-green-900"
                     : "bg-yellow-200 border-yellow-600 text-yellow-900"
                     }`}>
                     {p.status}
                   </span>
                 </td>
-                <td className="py-2 pr-2 align-top text-[11px] text-gray-600">
+                <td className="py-2 pr-2 align-top text-[11px] text-[var(--fg-muted)]">
                   {p.createdAt ? new Date(p.createdAt).toISOString().slice(0, 10) : ""}
                 </td>
                 <td className="py-2 pr-2 align-top">

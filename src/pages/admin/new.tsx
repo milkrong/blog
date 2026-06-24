@@ -86,7 +86,7 @@ export default function AdminNewPage() {
                             <Skeleton className="h-8 w-16" />
                         </div>
                     </div>
-                    <div className="bg-white border-4 border-gray-800 shadow-[6px_6px_0_0_#1f2937] p-6 space-y-6">
+                    <div className="bg-[var(--surface)] border-4 border-[var(--ink)] shadow-[6px_6px_0_0_var(--ink)] p-6 space-y-6">
                         <div className="space-y-2">
                             <Skeleton className="h-4 w-16" />
                             <Skeleton className="h-10 w-full" />
@@ -117,7 +117,7 @@ export default function AdminNewPage() {
                         <h1 className="text-3xl font-bold tracking-tight">新建文章</h1>
                         <PixelButton variant="secondary" size="sm" onClick={() => router.push("/admin")}>返回列表</PixelButton>
                     </div>
-                    <div className="bg-white border-4 border-gray-800 shadow-[6px_6px_0_0_#1f2937] p-6 space-y-6">
+                    <div className="bg-[var(--surface)] border-4 border-[var(--ink)] shadow-[6px_6px_0_0_var(--ink)] p-6 space-y-6">
                         <div className="space-y-2">
                             <Label htmlFor="title">标题</Label>
                             <PixelInput id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
@@ -173,7 +173,7 @@ export default function AdminNewPage() {
                             </div>
                             {coverUrl && (
                                 // eslint-disable-next-line @next/next/no-img-element
-                                <img src={coverUrl} alt="cover" className="mt-2 h-40 w-full object-cover border-4 border-gray-800" />
+                                <img src={coverUrl} alt="cover" className="mt-2 h-40 w-full object-cover border-4 border-[var(--ink)]" />
                             )}
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -189,7 +189,7 @@ export default function AdminNewPage() {
                         <div className="space-y-2">
                             <Label>内容</Label>
                             <EditorToolbar editor={editor} />
-                            <EditorContent editor={editor} className="min-h-[500px] border-4 border-gray-800 bg-white shadow-[4px_4px_0_0_#1f2937] p-3 prose max-w-none" />
+                            <EditorContent editor={editor} className="min-h-[500px] border-4 border-[var(--ink)] bg-[var(--surface)] shadow-[4px_4px_0_0_var(--ink)] p-3 prose max-w-none" />
                         </div>
                         <div className="flex gap-3">
                             <PixelButton disabled={createPostMutation.isPending} onClick={() => handleCreate(false)}>
