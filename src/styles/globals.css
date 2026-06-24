@@ -2,74 +2,300 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   Neo-brutalist pixel design tokens
+   Palette is locked by ROLE:
+     ink    -> all borders + offset shadows + primary text
+     paper  -> page background
+     surface-> card / panel background
+     accent -> the ONE action color (links, primary buttons)
+     hi     -> yellow highlight, used only for tags / badges
+     ok / danger -> semantic only (success / destructive)
+   ============================================================ */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --paper: #f3f2ec;
+    --surface: #ffffff;
+    --surface-2: #f6f6f1;
+    --ink: #16181d;
+    --fg: #16181d;
+    --fg-muted: #555a63;
+    --accent: #2563eb;
+    --accent-fg: #ffffff;
+    --hi: #facc15;
+    --hi-ink: #a16207;
+    --ok: #16a34a;
+    --danger: #dc2626;
+    --grid-line: rgba(22, 24, 29, 0.05);
+
+    /* shadcn token bridge (kept so existing ui/* components stay coherent) */
+    --background: 60 14% 94%;
+    --foreground: 222 18% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222 18% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
+    --popover-foreground: 222 18% 10%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 60 6% 92%;
+    --secondary-foreground: 222 18% 10%;
+    --muted: 60 6% 92%;
+    --muted-foreground: 220 6% 36%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 18% 10%;
+    --input: 222 18% 10%;
+    --ring: 221 83% 53%;
+    --radius: 0rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --paper: #0e0f12;
+    --surface: #1b1d22;
+    --surface-2: #23262d;
+    --ink: #f2f1ea;
+    --fg: #f2f1ea;
+    --fg-muted: #a3a7b0;
+    --accent: #5b8cff;
+    --accent-fg: #0e0f12;
+    --hi: #fbbf24;
+    --hi-ink: #1b1d22;
+    --ok: #34d399;
+    --danger: #f87171;
+    --grid-line: rgba(242, 241, 234, 0.045);
+
+    --background: 222 11% 7%;
+    --foreground: 50 18% 93%;
+    --card: 222 11% 12%;
+    --card-foreground: 50 18% 93%;
+    --popover: 222 11% 12%;
+    --popover-foreground: 50 18% 93%;
+    --primary: 222 100% 68%;
+    --primary-foreground: 222 11% 7%;
+    --secondary: 222 10% 18%;
+    --secondary-foreground: 50 18% 93%;
+    --muted: 222 10% 18%;
+    --muted-foreground: 220 8% 66%;
+    --destructive: 0 84% 70%;
+    --destructive-foreground: 222 11% 7%;
+    --border: 50 18% 93%;
+    --input: 222 10% 18%;
+    --ring: 222 100% 68%;
   }
 
   * {
-    @apply border-border;
+    border-color: var(--ink);
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--paper);
+    color: var(--fg);
+    font-family: var(--font-sans, ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif);
+    -webkit-font-smoothing: antialiased;
   }
 }
 
+/* ============================================================
+   Pixel component utilities — single source of truth for the
+   brutalist surfaces. Every panel/card/tag points here, so dark
+   mode + future tweaks happen in one place.
+   ============================================================ */
+@layer components {
+  .pixel-panel {
+    background-color: var(--surface);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 0 var(--ink);
+  }
+
+  .pixel-panel-lg {
+    background-color: var(--surface);
+    border: 3px solid var(--ink);
+    box-shadow: 6px 6px 0 0 var(--ink);
+  }
+
+  /* clickable surface: lifts toward the cursor, shadow deepens */
+  .pixel-lift {
+    transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .pixel-lift:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 7px 7px 0 0 var(--ink);
+  }
+
+  /* small inline chip; set the fill with a bg-* utility on top */
+  .pixel-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 2px solid var(--ink);
+    box-shadow: 2px 2px 0 0 var(--ink);
+    padding: 0.15rem 0.5rem;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.7rem;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+  }
+
+  .pixel-input {
+    width: 100%;
+    background-color: var(--surface);
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 0 var(--ink);
+    padding: 0.5rem 0.75rem;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.875rem;
+    color: var(--fg);
+    transition: box-shadow 0.12s ease, transform 0.12s ease;
+  }
+  .pixel-input::placeholder {
+    color: var(--fg-muted);
+    opacity: 0.7;
+  }
+  .pixel-input:focus {
+    outline: none;
+    box-shadow: 3px 3px 0 0 var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* text helpers so components stop hardcoding gray-* */
+  .text-fg {
+    color: var(--fg);
+  }
+  .text-fg-muted {
+    color: var(--fg-muted);
+  }
+  .text-accent {
+    color: var(--accent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pixel-lift,
+  .pixel-input {
+    transition: none;
+  }
+  .pixel-lift:hover {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   Long-form article typography — readable, still brutalist.
+   Headings stay mono/bold; body is the readable sans stack.
+   ============================================================ */
+.pixel-prose {
+  color: var(--fg);
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  max-width: 70ch;
+}
+.pixel-prose h1,
+.pixel-prose h2,
+.pixel-prose h3,
+.pixel-prose h4 {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  line-height: 1.2;
+}
+.pixel-prose h2 {
+  font-size: 1.6rem;
+  margin: 2.4rem 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 3px solid var(--ink);
+}
+.pixel-prose h3 {
+  font-size: 1.25rem;
+  margin: 1.9rem 0 0.75rem;
+}
+.pixel-prose p,
+.pixel-prose ul,
+.pixel-prose ol {
+  margin: 1.1rem 0;
+}
+.pixel-prose ul,
+.pixel-prose ol {
+  padding-left: 1.4rem;
+}
+.pixel-prose ul {
+  list-style: square;
+}
+.pixel-prose ol {
+  list-style: decimal;
+}
+.pixel-prose li {
+  margin: 0.4rem 0;
+}
+.pixel-prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+  font-weight: 600;
+}
+.pixel-prose strong {
+  color: var(--fg);
+  font-weight: 700;
+}
+.pixel-prose blockquote {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1.1rem;
+  background-color: var(--surface-2);
+  border-left: 5px solid var(--accent);
+  color: var(--fg-muted);
+  font-style: normal;
+}
+.pixel-prose :not(pre) > code {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.85em;
+  background-color: var(--surface-2);
+  border: 2px solid var(--ink);
+  padding: 0.05rem 0.35rem;
+}
+.pixel-prose pre {
+  background-color: var(--surface-2);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 0 var(--ink);
+  padding: 0;
+  margin: 1.6rem 0;
+  overflow: hidden;
+}
+.pixel-prose pre code {
+  display: block;
+  overflow-x: auto;
+  padding: 1rem 1.1rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.pixel-prose img {
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 0 var(--ink);
+  margin: 1.6rem 0;
+}
+.pixel-prose hr {
+  border: none;
+  border-top: 3px dashed var(--ink);
+  margin: 2.5rem 0;
+}
+
+/* ============================================================
+   Editor (TipTap) + code highlight
+   ============================================================ */
 .ProseMirror {
   @apply outline-none;
   min-height: 500px;
   padding: 0.75rem;
-  /* match p-3 */
   cursor: text;
 }
 
-.ProseMirror>*+* {
+.ProseMirror > * + * {
   margin-top: 0.75rem;
 }
 
-/* code highlight theme (github-like minimal) */
 pre code.hljs {
   display: block;
   overflow-x: auto;
@@ -78,10 +304,120 @@ pre code.hljs {
 
 code.hljs {
   padding: 0.2rem 0.4rem;
-  border-radius: 0.25rem;
 }
 
-/* Pixel cube animation */
+/* ============================================================
+   Pixel robot mascot (replaces the cube)
+   ============================================================ */
+.pixel-mascot-bot {
+  position: relative;
+  width: 56px;
+  height: 64px;
+  animation: pm-bob 2.4s ease-in-out infinite;
+}
+.pixel-mascot-bot > span {
+  position: absolute;
+}
+.pm-head {
+  top: 14px;
+  left: 4px;
+  width: 48px;
+  height: 40px;
+  background: var(--hi);
+  border: 3px solid var(--ink);
+  box-shadow: 3px 3px 0 0 var(--ink);
+}
+.pm-ant {
+  top: 0;
+  left: 26px;
+  width: 3px;
+  height: 12px;
+  background: var(--ink);
+}
+.pm-ant-dot {
+  top: -4px;
+  left: 22px;
+  width: 11px;
+  height: 11px;
+  background: var(--accent);
+  border: 3px solid var(--ink);
+}
+.pm-eyes {
+  top: 26px;
+  left: 11px;
+  width: 34px;
+  height: 14px;
+  display: block;
+}
+.pm-eyes .pm-eye {
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 14px;
+  background: var(--ink);
+  animation: pm-blink 3.4s steps(1) infinite;
+}
+.pm-eyes .pm-eye:first-child {
+  left: 0;
+}
+.pm-eyes .pm-eye:last-child {
+  left: 24px;
+}
+.pm-mouth {
+  top: 44px;
+  left: 16px;
+  width: 24px;
+  height: 4px;
+  background: var(--ink);
+}
+
+/* click reaction: more specific selector, so it replaces pm-bob while active */
+.pixel-mascot-bot.pixel-mascot-react {
+  animation: pm-react 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pm-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes pm-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  96% {
+    transform: scaleY(0.12);
+  }
+}
+@keyframes pm-react {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-12px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pixel-mascot-bot,
+  .pixel-mascot-bot.pixel-mascot-react,
+  .pm-eyes .pm-eye {
+    animation: none !important;
+  }
+}
+
+/* ============================================================
+   Pixel cube (profile mascot)
+   ============================================================ */
 .pixel-cube {
   position: relative;
   width: 100%;
@@ -93,8 +429,8 @@ code.hljs {
 .pixel-cube .face {
   position: absolute;
   inset: 0;
-  border: 4px solid #1f2937;
-  box-shadow: 4px 4px 0 0 #1f2937;
+  border: 4px solid var(--ink);
+  box-shadow: 4px 4px 0 0 var(--ink);
   opacity: 0.95;
   animation: cube-blink 2.4s steps(2, end) infinite;
 }
@@ -103,27 +439,22 @@ code.hljs {
   background: #ef4444;
   transform: translateZ(2.5rem);
 }
-
 .pixel-cube .back {
   background: #22c55e;
   transform: rotateY(180deg) translateZ(2.5rem);
 }
-
 .pixel-cube .right {
   background: #3b82f6;
   transform: rotateY(90deg) translateZ(2.5rem);
 }
-
 .pixel-cube .left {
   background: #f97316;
   transform: rotateY(-90deg) translateZ(2.5rem);
 }
-
 .pixel-cube .top {
   background: #facc15;
   transform: rotateX(90deg) translateZ(2.5rem);
 }
-
 .pixel-cube .bottom {
   background: #e5e7eb;
   transform: rotateX(-90deg) translateZ(2.5rem);
@@ -133,24 +464,27 @@ code.hljs {
   0% {
     transform: rotateX(0deg) rotateY(0deg);
   }
-
   50% {
     transform: rotateX(180deg) rotateY(180deg);
   }
-
   100% {
     transform: rotateX(360deg) rotateY(360deg);
   }
 }
 
 @keyframes cube-blink {
-
   0%,
   100% {
     filter: brightness(100%);
   }
-
   50% {
     filter: brightness(70%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pixel-cube,
+  .pixel-cube .face {
+    animation: none;
   }
 }

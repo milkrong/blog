@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { PixelButton } from "./PixelButton";
+import { PixelMascot } from "./PixelMascot";
 
 interface ProfileHeaderProps {
   name?: string;
@@ -22,10 +23,10 @@ export function ProfileHeader({
   company = "Your Company",
 }: ProfileHeaderProps) {
   return (
-    <section className="mb-10 bg-white border-4 border-gray-800 shadow-[6px_6px_0_0_#1f2937] p-6 md:p-8 flex flex-col md:flex-row gap-6 font-mono">
+    <section className="pixel-panel-lg mb-2 flex flex-col gap-6 p-6 font-mono md:flex-row md:p-8">
       <div className="flex-shrink-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <div className="relative h-28 w-28 md:h-32 md:w-32 border-4 border-gray-800 bg-white shadow-[4px_4px_0_0_#1f2937] overflow-hidden">
+        <div className="relative h-28 w-28 overflow-hidden border-[3px] border-[var(--ink)] bg-[var(--surface)] shadow-[4px_4px_0_0_var(--ink)] md:h-32 md:w-32">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={avatarSrc}
@@ -36,25 +37,27 @@ export function ProfileHeader({
       </div>
       <div className="flex-1 space-y-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-3">
-            {name}
-            <span className="text-xs font-normal px-2 py-1 bg-yellow-200 border-2 border-yellow-600 shadow-[2px_2px_0_0_#ca8a04] text-yellow-900 uppercase tracking-wide">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl font-extrabold tracking-tight text-fg">
+              {name}
+            </h1>
+            <span className="pixel-chip bg-[var(--hi)] text-[var(--hi-ink)] font-bold uppercase tracking-wide">
               {title}
             </span>
-          </h1>
-          <p className="mt-3 text-sm text-gray-700 leading-relaxed line-clamp-3">
+          </div>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-fg-muted">
             {bio}
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-gray-600">
+        <div className="flex flex-wrap items-center gap-3">
           {company && (
-            <span className="inline-flex items-center gap-1 bg-blue-200 border-2 border-blue-600 px-2 py-1 shadow-[2px_2px_0_0_#1d4ed8] text-blue-900">
-              🏢 {company}
+            <span className="pixel-chip bg-[var(--surface-2)] text-fg-muted">
+              <span className="text-fg-muted/70">CO</span> {company}
             </span>
           )}
           {location && (
-            <span className="inline-flex items-center gap-1 bg-green-200 border-2 border-green-600 px-2 py-1 shadow-[2px_2px_0_0_#15803d] text-green-900">
-              📍 {location}
+            <span className="pixel-chip bg-[var(--surface-2)] text-fg-muted">
+              <span className="text-fg-muted/70">LOC</span> {location}
             </span>
           )}
           <Link
@@ -64,22 +67,13 @@ export function ProfileHeader({
             className="inline-block"
           >
             <PixelButton variant="secondary" size="sm">
-              GitHub
+              GitHub →
             </PixelButton>
           </Link>
         </div>
       </div>
       <div className="hidden md:flex items-center justify-center flex-shrink-0 mr-8">
-        <div className="h-16 w-16 md:h-20 md:w-20">
-          <div className="pixel-cube">
-            <div className="face front" />
-            <div className="face back" />
-            <div className="face right" />
-            <div className="face left" />
-            <div className="face top" />
-            <div className="face bottom" />
-          </div>
-        </div>
+        <PixelMascot />
       </div>
     </section>
   );
