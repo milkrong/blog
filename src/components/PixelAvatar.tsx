@@ -19,7 +19,7 @@ interface PixelAvatarProps {
 export function PixelAvatar({
   src,
   alt,
-  resolution = 40,
+  resolution = 24,
   filter = "contrast(1.08) saturate(1.2)",
   className = "",
 }: PixelAvatarProps) {
