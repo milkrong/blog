@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { PixelButton } from "./PixelButton";
 import { PixelMascot } from "./PixelMascot";
+import { PixelAvatar } from "./PixelAvatar";
 
 interface ProfileHeaderProps {
   name?: string;
@@ -27,8 +28,7 @@ export function ProfileHeader({
       <div className="flex-shrink-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <div className="relative h-28 w-28 overflow-hidden border-[3px] border-[var(--ink)] bg-[var(--surface)] shadow-[4px_4px_0_0_var(--ink)] md:h-32 md:w-32">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <PixelAvatar
             src={avatarSrc}
             alt={name}
             className="absolute inset-0 h-full w-full object-cover"
