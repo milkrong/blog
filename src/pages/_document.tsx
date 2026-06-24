@@ -16,6 +16,9 @@ export default function Document() {
   return (
     <Html lang="zh-CN">
       <Head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/favicon.svg" />
+        <meta name="theme-color" content="#facc15" />
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
       </Head>
       <body>
