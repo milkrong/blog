@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
 interface PixelAvatarProps {
   src: string;
@@ -19,9 +19,9 @@ interface PixelAvatarProps {
 export function PixelAvatar({
   src,
   alt,
-  resolution = 24,
-  filter = "contrast(1.08) saturate(1.2)",
-  className = "",
+  resolution = 56,
+  filter = 'contrast(1.08) saturate(1.2)',
+  className = '',
 }: PixelAvatarProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [failed, setFailed] = useState(false);
@@ -34,7 +34,7 @@ export function PixelAvatar({
     // tainted canvas renders fine. Requesting CORS would fail on redirected
     // avatar URLs (e.g. github.com/<user>.png) and break the effect.
     img.onload = () => {
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext('2d');
       if (!ctx) return;
       const size = resolution;
       canvas.width = size;
@@ -62,7 +62,7 @@ export function PixelAvatar({
       role="img"
       aria-label={alt}
       className={className}
-      style={{ imageRendering: "pixelated", filter }}
+      style={{ imageRendering: 'pixelated', filter }}
     />
   );
 }
