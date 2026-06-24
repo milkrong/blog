@@ -6,4 +6,9 @@ node_modules/
 # Next.js public assets directory
 .deploy*
 .next
+.env.superpowers/
+.claude
+.superpowers
+.playwright-mcp
+
 .env

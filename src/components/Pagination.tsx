@@ -16,8 +16,10 @@ export default function Pagination({ current, total, onPageChange }: Props) {
           <button
             key={page}
             onClick={() => onPageChange && onPageChange(page)}
-            className={`px-3 py-1 rounded ${
-              isActive ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+            className={`font-mono text-sm border-[3px] border-[var(--ink)] px-3 py-1 shadow-[2px_2px_0_0_var(--ink)] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none ${
+              isActive
+                ? 'bg-[var(--accent)] text-[var(--accent-fg)]'
+                : 'bg-[var(--surface)] text-fg-muted hover:text-accent'
             }`}
           >
             {page}

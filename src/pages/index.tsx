@@ -22,17 +22,27 @@ export default function Home() {
         location="Shanghai"
         company="Independent"
       />
-      <h2 className="text-xl font-semibold mb-4">最新文章</h2>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="mb-5 flex items-baseline gap-3">
+        <h2 className="font-mono text-xl font-extrabold tracking-tight text-fg">
+          最新文章
+        </h2>
+        <span className="h-[3px] flex-1 bg-[var(--ink)]" aria-hidden />
+        {!isLoading && posts && (
+          <span className="font-mono text-sm text-fg-muted">
+            {posts.length} 篇
+          </span>
+        )}
+      </div>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {isLoading &&
           Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="space-y-3">
-              <Skeleton className="h-40 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-              <div className="flex gap-2">
-                <Skeleton className="h-5 w-12" />
-                <Skeleton className="h-5 w-16" />
+            <div key={i} className="pixel-panel p-0">
+              <Skeleton className="h-44 w-full rounded-none" />
+              <div className="space-y-3 p-5">
+                <Skeleton className="h-3 w-1/3 rounded-none" />
+                <Skeleton className="h-5 w-3/4 rounded-none" />
+                <Skeleton className="h-4 w-full rounded-none" />
+                <Skeleton className="h-4 w-2/3 rounded-none" />
               </div>
             </div>
           ))}
@@ -54,6 +64,21 @@ export default function Home() {
             />
           ))}
       </div>
+
+      {!isLoading && (!posts || posts.length === 0) && (
+        <div className="pixel-panel flex flex-col items-center gap-3 px-6 py-16 text-center">
+          <div
+            aria-hidden
+            className="grid h-12 w-12 place-items-center border-[3px] border-[var(--ink)] bg-[var(--hi)] text-[var(--hi-ink)] text-xl font-black shadow-[3px_3px_0_0_var(--ink)]"
+          >
+            !
+          </div>
+          <p className="font-mono text-lg font-bold text-fg">还没有文章</p>
+          <p className="max-w-sm text-sm text-fg-muted">
+            第一篇还在路上。登录管理后台即可发布新内容。
+          </p>
+        </div>
+      )}
     </Layout>
   );
 }

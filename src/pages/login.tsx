@@ -2,9 +2,8 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { trpc } from "../utils/trpc";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
+import { PixelButton } from "../components/PixelButton";
+import { PixelInput } from "../components/PixelInput";
 import { REGISTRATION_ENABLED } from "../lib/security";
 
 export default function LoginPage() {
@@ -42,55 +41,68 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full grid lg:grid-cols-2">
-      <div className="absolute top-4 right-4 z-20">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/">返回首页</Link>
-        </Button>
+    <div
+      className="relative grid min-h-[100dvh] w-full place-items-center px-4 py-12"
+      style={{
+        backgroundImage:
+          "linear-gradient(90deg, var(--grid-line) 1px, transparent 1px), linear-gradient(180deg, var(--grid-line) 1px, transparent 1px)",
+        backgroundSize: "18px 18px",
+      }}
+    >
+      <div className="absolute right-4 top-4 z-20">
+        <Link href="/">
+          <PixelButton variant="secondary" size="sm">
+            返回首页
+          </PixelButton>
+        </Link>
       </div>
-      {/* Left visual panel */}
-      <div className="hidden lg:block relative">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage:
-              "url(/login-bg.jpg), radial-gradient(at 30% 30%, rgba(56,189,248,0.25), transparent 60%), linear-gradient(to bottom right, hsl(var(--primary)/0.15), transparent)",
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-background/60 to-background/10 backdrop-blur-sm" />
-        <div className="relative z-10 flex h-full items-end p-10">
-          <div className="max-w-md text-sm text-muted-foreground">
-            <h2 className="text-3xl font-bold tracking-tight mb-2">欢迎回来</h2>
-            <p>登录后可进入管理后台发布或编辑文章。</p>
-          </div>
+
+      <div className="w-full max-w-md">
+        {/* Brand mark */}
+        <div className="mb-6 flex items-center gap-2 font-mono text-lg font-extrabold text-fg">
+          <span
+            aria-hidden
+            className="grid h-7 w-7 place-items-center border-2 border-[var(--ink)] bg-[var(--hi)] text-[var(--hi-ink)] text-xs font-black shadow-[2px_2px_0_0_var(--ink)]"
+          >
+            M
+          </span>
+          milkrong<span className="text-fg-muted">/blog</span>
         </div>
-      </div>
-      {/* Right form panel */}
-      <div className="flex items-center justify-center p-6 sm:p-10">
-        <div className="w-full max-w-md space-y-6">
-          <div className="space-y-2 text-center">
-            <h1 className="text-2xl font-bold">
+
+        <div className="pixel-panel-lg p-6 sm:p-8">
+          <div className="mb-6">
+            <h1 className="font-mono text-2xl font-extrabold tracking-tight text-fg">
               {mode === "login" ? "登录" : "注册"}
             </h1>
-            <p className="text-sm text-muted-foreground">
-              {mode === "login" ? "输入邮箱与密码登录账号" : "创建一个新账号"}
+            <p className="mt-1 text-sm text-fg-muted">
+              {mode === "login" ? "输入邮箱与密码进入管理后台" : "创建一个新账号"}
             </p>
           </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && (
+              <p className="border-l-4 border-[var(--danger)] bg-[var(--surface-2)] px-3 py-2 font-mono text-sm text-[var(--danger)]">
+                {error}
+              </p>
+            )}
             {registerMutation.error && (
-              <p className="text-sm text-destructive">
+              <p className="font-mono text-sm text-[var(--danger)]">
                 {registerMutation.error.message}
               </p>
             )}
             {loginMutation.error && (
-              <p className="text-sm text-destructive">
+              <p className="font-mono text-sm text-[var(--danger)]">
                 {loginMutation.error.message}
               </p>
             )}
-            <div className="space-y-2">
-              <Label htmlFor="email">邮箱</Label>
-              <Input
+            <div className="space-y-1.5">
+              <label
+                htmlFor="email"
+                className="font-mono text-xs font-bold uppercase tracking-wide text-fg-muted"
+              >
+                邮箱
+              </label>
+              <PixelInput
                 id="email"
                 type="email"
                 autoComplete="email"
@@ -100,9 +112,14 @@ export default function LoginPage() {
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">密码</Label>
-              <Input
+            <div className="space-y-1.5">
+              <label
+                htmlFor="password"
+                className="font-mono text-xs font-bold uppercase tracking-wide text-fg-muted"
+              >
+                密码
+              </label>
+              <PixelInput
                 id="password"
                 type="password"
                 autoComplete={
@@ -115,9 +132,14 @@ export default function LoginPage() {
               />
             </div>
             {mode === "register" && (
-              <div className="space-y-2">
-                <Label htmlFor="secret">注册密钥</Label>
-                <Input
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="secret"
+                  className="font-mono text-xs font-bold uppercase tracking-wide text-fg-muted"
+                >
+                  注册密钥
+                </label>
+                <PixelInput
                   id="secret"
                   type="password"
                   value={secret}
@@ -125,12 +147,17 @@ export default function LoginPage() {
                   placeholder="输入注册密钥"
                   required
                 />
-                <p className="text-xs text-muted-foreground">
+                <p className="font-mono text-xs text-fg-muted">
                   需要正确的注册密钥才能创建账号
                 </p>
               </div>
             )}
-            <Button disabled={loading} type="submit" className="w-full">
+            <PixelButton
+              disabled={loading}
+              type="submit"
+              className="w-full"
+              size="lg"
+            >
               {loading
                 ? mode === "login"
                   ? "登录中..."
@@ -138,15 +165,16 @@ export default function LoginPage() {
                 : mode === "login"
                 ? "登录"
                 : "创建账号"}
-            </Button>
+            </PixelButton>
           </form>
+
           {REGISTRATION_ENABLED && (
-            <div className="text-center text-sm">
+            <div className="mt-5 text-center font-mono text-sm">
               {mode === "login" ? (
                 <button
                   type="button"
                   onClick={() => setMode("register")}
-                  className="text-primary underline-offset-4 hover:underline"
+                  className="text-accent underline underline-offset-4 hover:opacity-80"
                 >
                   还没有账号？注册
                 </button>
@@ -154,7 +182,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setMode("login")}
-                  className="text-primary underline-offset-4 hover:underline"
+                  className="text-accent underline underline-offset-4 hover:opacity-80"
                 >
                   已有账号？登录
                 </button>
