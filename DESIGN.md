@@ -10,7 +10,7 @@ colors:
   accent: "#2563eb"
   accent-fg: "#ffffff"
   highlight: "#facc15"
-  highlight-ink: "#a16207"
+  highlight-ink: "#713f12"
   ok: "#16a34a"
   danger: "#dc2626"
 typography:
@@ -140,7 +140,7 @@ is locked by role, not by mood.
 ### Secondary
 - **Highlighter Yellow** (#facc15): the one highlight color, used only for category tags,
   the role badge, and the brand mark — the visual equivalent of a marker swipe. Paired with
-  its own deep ochre text (#a16207) for contrast, never gray-on-yellow.
+  its own deep ochre text (#713f12) for contrast, never gray-on-yellow.
 
 ### Tertiary (semantic only)
 - **Go Green** (#16a34a) and **Stop Red** (#dc2626): reserved strictly for success and

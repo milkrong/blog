@@ -23,7 +23,7 @@
     --accent: #2563eb;
     --accent-fg: #ffffff;
     --hi: #facc15;
-    --hi-ink: #a16207;
+    --hi-ink: #713f12; /* deep amber: 5.66:1 on --hi, clears WCAG AA */
     --ok: #16a34a;
     --danger: #dc2626;
     --grid-line: rgba(22, 24, 29, 0.05);
