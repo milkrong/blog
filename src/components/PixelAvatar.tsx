@@ -13,8 +13,8 @@ interface PixelAvatarProps {
 /**
  * Renders an image as crisp pixel-art: the source is drawn small onto a canvas
  * (averaging colors), then CSS upscales it with nearest-neighbor so you get
- * clean blocks instead of a blur. Falls back to a plain <img> if the image
- * cannot be loaded (e.g. CORS).
+ * clean blocks instead of a blur. Falls back to a plain image element (keeping
+ * the real src) if the canvas cannot be drawn.
  */
 export function PixelAvatar({
   src,
