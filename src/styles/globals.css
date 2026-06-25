@@ -23,7 +23,7 @@
     --accent: #2563eb;
     --accent-fg: #ffffff;
     --hi: #facc15;
-    --hi-ink: #a16207;
+    --hi-ink: #713f12; /* deep amber: 5.66:1 on --hi, clears WCAG AA */
     --ok: #16a34a;
     --danger: #dc2626;
     --grid-line: rgba(22, 24, 29, 0.05);
@@ -241,10 +241,11 @@
   font-weight: 700;
 }
 .pixel-prose blockquote {
-  margin: 1.5rem 0;
-  padding: 0.75rem 1.1rem;
+  margin: 1.6rem 0;
+  padding: 0.85rem 1.1rem;
   background-color: var(--surface-2);
-  border-left: 5px solid var(--accent);
+  border: 3px solid var(--ink);
+  box-shadow: 3px 3px 0 0 var(--ink);
   color: var(--fg-muted);
   font-style: normal;
 }

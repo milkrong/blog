@@ -36,14 +36,15 @@ export default function Home() {
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {isLoading &&
           Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="pixel-panel p-0">
-              <Skeleton className="h-44 w-full rounded-none" />
-              <div className="space-y-3 p-5">
-                <Skeleton className="h-3 w-1/3 rounded-none" />
-                <Skeleton className="h-5 w-3/4 rounded-none" />
-                <Skeleton className="h-4 w-full rounded-none" />
-                <Skeleton className="h-4 w-2/3 rounded-none" />
+            <div key={i} className="pixel-panel p-5">
+              <div className="mb-4 flex items-start justify-between">
+                <Skeleton className="h-10 w-10 rounded-none" />
+                <Skeleton className="h-5 w-14 rounded-none" />
               </div>
+              <Skeleton className="mb-3 h-3 w-1/3 rounded-none" />
+              <Skeleton className="mb-2 h-6 w-3/4 rounded-none" />
+              <Skeleton className="h-4 w-full rounded-none" />
+              <Skeleton className="mt-2 h-4 w-2/3 rounded-none" />
             </div>
           ))}
         {!isLoading &&
@@ -59,7 +60,7 @@ export default function Home() {
                   : ""
               }
               category={post.category?.name || "未分类"}
-              imageUrl={(post as any).cover || "/placeholder.png"}
+              imageUrl={(post as any).cover || undefined}
               readTime="约 3 分钟"
             />
           ))}

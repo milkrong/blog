@@ -12,8 +12,15 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [secret, setSecret] = useState("");
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [mode, setMode] = useState<"login" | "register">("login");
   const [loading, setLoading] = useState(false);
+
+  const switchMode = (next: "login" | "register") => {
+    setMode(next);
+    setError("");
+    setNotice("");
+  };
 
   const registerMutation = trpc.authRegister.useMutation();
   const loginMutation = trpc.authLogin.useMutation();
@@ -21,13 +28,13 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setNotice("");
     setLoading(true);
     try {
       if (mode === "register") {
         await registerMutation.mutateAsync({ email, password, secret });
-        // For now simply redirect to login mode after successful registration
         setMode("login");
-        setError("Registered successfully, please login.");
+        setNotice("注册成功，请登录。");
       } else {
         const data = await loginMutation.mutateAsync({ email, password });
         localStorage.setItem("sb-access-token", data.token);
@@ -49,15 +56,13 @@ export default function LoginPage() {
         backgroundSize: "18px 18px",
       }}
     >
-      <div className="absolute right-4 top-4 z-20">
-        <Link href="/">
-          <PixelButton variant="secondary" size="sm">
-            返回首页
-          </PixelButton>
-        </Link>
-      </div>
-
       <div className="w-full max-w-md">
+        <Link
+          href="/"
+          className="pixel-chip mb-5 inline-flex bg-[var(--surface)] text-fg-muted hover:text-accent active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+        >
+          <span aria-hidden>←</span> 返回首页
+        </Link>
         {/* Brand mark */}
         <div className="mb-6 flex items-center gap-2 font-mono text-lg font-extrabold text-fg">
           <span
@@ -81,18 +86,33 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <p className="border-l-4 border-[var(--danger)] bg-[var(--surface-2)] px-3 py-2 font-mono text-sm text-[var(--danger)]">
-                {error}
+              <p
+                role="alert"
+                className="flex items-start gap-2 border-2 border-[var(--danger)] px-3 py-2 font-mono text-sm text-fg"
+                style={{
+                  backgroundColor:
+                    "color-mix(in srgb, var(--danger) 10%, var(--surface))",
+                }}
+              >
+                <span aria-hidden className="font-bold text-[var(--danger)]">
+                  !
+                </span>
+                <span>{error}</span>
               </p>
             )}
-            {registerMutation.error && (
-              <p className="font-mono text-sm text-[var(--danger)]">
-                {registerMutation.error.message}
-              </p>
-            )}
-            {loginMutation.error && (
-              <p className="font-mono text-sm text-[var(--danger)]">
-                {loginMutation.error.message}
+            {notice && (
+              <p
+                role="status"
+                className="flex items-start gap-2 border-2 border-[var(--ok)] px-3 py-2 font-mono text-sm text-fg"
+                style={{
+                  backgroundColor:
+                    "color-mix(in srgb, var(--ok) 10%, var(--surface))",
+                }}
+              >
+                <span aria-hidden className="font-bold text-[var(--ok)]">
+                  ✓
+                </span>
+                <span>{notice}</span>
               </p>
             )}
             <div className="space-y-1.5">
@@ -173,7 +193,7 @@ export default function LoginPage() {
               {mode === "login" ? (
                 <button
                   type="button"
-                  onClick={() => setMode("register")}
+                  onClick={() => switchMode("register")}
                   className="text-accent underline underline-offset-4 hover:opacity-80"
                 >
                   还没有账号？注册
@@ -181,7 +201,7 @@ export default function LoginPage() {
               ) : (
                 <button
                   type="button"
-                  onClick={() => setMode("login")}
+                  onClick={() => switchMode("login")}
                   className="text-accent underline underline-offset-4 hover:opacity-80"
                 >
                   已有账号？登录

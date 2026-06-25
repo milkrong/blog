@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-25T00:00:00Z",
+  "title": "Design System: milkrong blog",
+  "extensions": {
+    "colorMeta": {
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#16181d", "tonalRamp": ["#0a0b0e", "#16181d", "#24272e", "#383c45", "#555a63", "#7f858f", "#aab0b8", "#e3e5e8"] },
+      "fg-muted": { "role": "neutral", "displayName": "Slate Ink", "canonical": "#555a63", "tonalRamp": ["#23252b", "#33363e", "#454953", "#555a63", "#6f747e", "#8b909a", "#aeb2ba", "#d4d6db"] },
+      "paper": { "role": "neutral", "displayName": "Graph Paper", "canonical": "#f3f2ec", "tonalRamp": ["#2a2a26", "#454339", "#615f53", "#86847a", "#aaa89e", "#cfcdc4", "#e7e5dd", "#f3f2ec"] },
+      "surface": { "role": "neutral", "displayName": "Card White", "canonical": "#ffffff", "tonalRamp": ["#1b1b1b", "#333333", "#555555", "#777777", "#999999", "#bbbbbb", "#dddddd", "#ffffff"] },
+      "surface-2": { "role": "neutral", "displayName": "Recessed Paper", "canonical": "#f6f6f1", "tonalRamp": ["#26261f", "#3f3f37", "#5b5b52", "#84847b", "#aaaaa1", "#cfcfc7", "#e9e9e2", "#f6f6f1"] },
+      "accent": { "role": "primary", "displayName": "Action Blue", "canonical": "#2563eb", "tonalRamp": ["#0b1f52", "#122e73", "#1b40a3", "#2563eb", "#4f7bf0", "#7d9ff5", "#aec3f9", "#dde7fd"] },
+      "highlight": { "role": "secondary", "displayName": "Highlighter Yellow", "canonical": "#facc15", "tonalRamp": ["#4a3c06", "#7a630a", "#a98a0e", "#d4ac12", "#facc15", "#fbd84a", "#fde488", "#fef3c6"] },
+      "ok": { "role": "semantic", "displayName": "Go Green", "canonical": "#16a34a", "tonalRamp": ["#06371c", "#0a5a2e", "#0e7d3f", "#16a34a", "#3cbb6b", "#6bcd91", "#9adfb8", "#cfeede"] },
+      "danger": { "role": "semantic", "displayName": "Stop Red", "canonical": "#dc2626", "tonalRamp": ["#4a0d0d", "#7a1414", "#a81c1c", "#dc2626", "#e85454", "#f08080", "#f6abab", "#fbd6d6"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Post titles. Largest type on a page; JetBrains Mono 800, tight tracking, never past ~2.25rem." },
+      "headline": { "displayName": "Headline", "purpose": "Section headers, paired with a full-width ink rule instead of an eyebrow." },
+      "title": { "displayName": "Title", "purpose": "Card titles and the author name." },
+      "body": { "displayName": "Body", "purpose": "UI copy, bios, card excerpts (reading sans)." },
+      "prose": { "displayName": "Prose", "purpose": "Long-form article body, capped ~70ch; article headings switch back to mono." },
+      "label": { "displayName": "Label", "purpose": "Chips, tags, theme toggle, meta strips (mono, often uppercase)." }
+    },
+    "shadows": [
+      { "name": "tile", "value": "4px 4px 0 0 var(--ink)", "purpose": "Default hard offset shadow for cards, panels, profile header (8px for the largest)." },
+      { "name": "control", "value": "3px 3px 0 0 var(--ink)", "purpose": "Inputs and buttons at rest." },
+      { "name": "chip", "value": "2px 2px 0 0 var(--ink)", "purpose": "Chips, tags, the brand mark." },
+      { "name": "lift", "value": "7px 7px 0 0 var(--ink)", "purpose": "Hover state for clickable cards, paired with translate(-3px,-3px)." }
+    ],
+    "motion": [
+      { "name": "ease-out-quart", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Standard easing for lifts and reveals; no bounce." },
+      { "name": "press", "value": "75ms ease", "purpose": "Button/chip :active press-in (translate + shadow removal)." },
+      { "name": "lift", "value": "180ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Card hover lift." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "2xl", "value": "1536px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single action color. Hard offset shadow, presses in on click.",
+      "html": "<button class=\"ds-btn-primary\">阅读更多 →</button>",
+      "css": ".ds-btn-primary { display:inline-flex; align-items:center; gap:0.375rem; font-family:'JetBrains Mono',ui-monospace,monospace; font-weight:700; color:#ffffff; background:#2563eb; border:3px solid #16181d; box-shadow:3px 3px 0 0 #16181d; padding:0.5rem 1rem; cursor:pointer; transition:transform .075s ease, box-shadow .075s ease; } .ds-btn-primary:hover { transform:translate(-1px,-1px); box-shadow:4px 4px 0 0 #16181d; } .ds-btn-primary:active { transform:translate(1px,1px); box-shadow:none; } .ds-btn-primary:focus-visible { outline:2px solid #2563eb; outline-offset:2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Neutral action on recessed paper fill; same hard-shadow mechanics.",
+      "html": "<button class=\"ds-btn-secondary\">GitHub →</button>",
+      "css": ".ds-btn-secondary { display:inline-flex; align-items:center; gap:0.375rem; font-family:'JetBrains Mono',ui-monospace,monospace; font-weight:700; color:#16181d; background:#f6f6f1; border:3px solid #16181d; box-shadow:3px 3px 0 0 #16181d; padding:0.5rem 1rem; cursor:pointer; transition:transform .075s ease, box-shadow .075s ease; } .ds-btn-secondary:hover { transform:translate(-1px,-1px); box-shadow:4px 4px 0 0 #16181d; background:#ffffff; } .ds-btn-secondary:active { transform:translate(1px,1px); box-shadow:none; } .ds-btn-secondary:focus-visible { outline:2px solid #2563eb; outline-offset:2px; }"
+    },
+    {
+      "name": "Pixel Chip",
+      "kind": "chip",
+      "refersTo": "chip-highlight",
+      "description": "The one chip primitive. Highlight variant (yellow) for categories; neutral variant for tags.",
+      "html": "<span class=\"ds-chip ds-chip-hi\">daily</span> <span class=\"ds-chip\"><span class=\"ds-hash\">#</span>typescript</span>",
+      "css": ".ds-chip { display:inline-flex; align-items:center; gap:0.35rem; font-family:'JetBrains Mono',ui-monospace,monospace; font-size:0.7rem; font-weight:700; letter-spacing:0.02em; line-height:1.4; border:2px solid #16181d; box-shadow:2px 2px 0 0 #16181d; padding:0.15rem 0.5rem; background:#f6f6f1; color:#555a63; } .ds-chip-hi { background:#facc15; color:#713f12; } .ds-chip .ds-hash { color:#2563eb; }"
+    },
+    {
+      "name": "Pixel Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Mono text field; border and shadow both shift to Action Blue on focus (no glow).",
+      "html": "<input class=\"ds-input\" placeholder=\"you@example.com\" />",
+      "css": ".ds-input { width:100%; box-sizing:border-box; font-family:'JetBrains Mono',ui-monospace,monospace; font-size:0.875rem; color:#16181d; background:#ffffff; border:3px solid #16181d; box-shadow:3px 3px 0 0 #16181d; padding:0.5rem 0.75rem; } .ds-input::placeholder { color:#555a63; opacity:0.7; } .ds-input:focus { outline:none; border-color:#2563eb; box-shadow:3px 3px 0 0 #2563eb; }"
+    },
+    {
+      "name": "Blog Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Clickable tile; whole card links, lifts toward the cursor on hover, title turns Action Blue.",
+      "html": "<a class=\"ds-card\" href=\"#\"><h3>像素风排版验证</h3><p>一篇用于预览阅读体验的临时文章。统一的边框与投影，锁定的强调色。</p><span class=\"ds-readmore\">阅读 →</span></a>",
+      "css": ".ds-card { display:block; text-decoration:none; background:#ffffff; border:3px solid #16181d; box-shadow:4px 4px 0 0 #16181d; padding:1.25rem; transition:transform .18s cubic-bezier(.16,1,.3,1), box-shadow .18s cubic-bezier(.16,1,.3,1); } .ds-card:hover { transform:translate(-3px,-3px); box-shadow:7px 7px 0 0 #16181d; } .ds-card h3 { font-family:'JetBrains Mono',ui-monospace,monospace; font-weight:700; font-size:1.125rem; color:#16181d; margin:0 0 0.5rem; } .ds-card:hover h3 { color:#2563eb; } .ds-card p { font-family:ui-sans-serif,system-ui,sans-serif; color:#555a63; font-size:0.875rem; line-height:1.6; margin:0 0 1rem; } .ds-card .ds-readmore { font-family:'JetBrains Mono',ui-monospace,monospace; font-weight:700; font-size:0.875rem; color:#2563eb; }"
+    },
+    {
+      "name": "Top Navigation",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "Sticky ≤64px bar with a 3px ink bottom border; pixel-M brand mark, mono links, theme chip.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-brand\" href=\"#\"><span class=\"ds-mark\">M</span>milkrong<span class=\"ds-slash\">/blog</span></a><div class=\"ds-navright\"><a class=\"ds-link\" href=\"#\">GitHub</a><span class=\"ds-chip\">DARK</span></div></nav>",
+      "css": ".ds-nav { display:flex; align-items:center; justify-content:space-between; height:64px; padding:0 1rem; background:#ffffff; border-bottom:3px solid #16181d; font-family:'JetBrains Mono',ui-monospace,monospace; } .ds-nav .ds-brand { display:inline-flex; align-items:center; gap:0.5rem; font-weight:800; font-size:1.125rem; color:#16181d; text-decoration:none; } .ds-nav .ds-brand .ds-mark { display:grid; place-items:center; width:1.5rem; height:1.5rem; background:#facc15; color:#713f12; border:2px solid #16181d; box-shadow:2px 2px 0 0 #16181d; font-size:11px; font-weight:900; } .ds-nav .ds-slash { color:#555a63; } .ds-nav .ds-navright { display:inline-flex; align-items:center; gap:0.75rem; } .ds-nav a.ds-link { color:#555a63; text-decoration:none; font-size:0.875rem; } .ds-nav a.ds-link:hover { color:#2563eb; } .ds-nav .ds-chip { display:inline-flex; align-items:center; font-family:'JetBrains Mono',ui-monospace,monospace; font-size:0.7rem; font-weight:700; letter-spacing:0.02em; border:2px solid #16181d; box-shadow:2px 2px 0 0 #16181d; padding:0.15rem 0.5rem; background:#ffffff; color:#16181d; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The 8-Bit Notebook",
+    "overview": "A developer's published notebook rendered as a hand-built pixel machine. Every surface is a thick ink-bordered tile that casts a hard, blur-free offset shadow, as if pieces of paper were stacked on a workbench and pinned down. The chrome speaks in mono (JetBrains Mono); the long-form writing relaxes into a clean reading sans. The mood is crafted, playful, honest — a person who builds their own tools and enjoys it, not a brand performing polish. It is dual-theme from the ground up: a warm graph-paper light mode and an off-black dark mode that share one structural language, where the 'ink' inverts to a light off-white so borders and shadows keep reading.",
+    "keyCharacteristics": [
+      "Hard offset shadows (solid, zero blur) instead of ambient elevation.",
+      "Square corners everywhere (radius 0).",
+      "Mono for all chrome/headings; readable sans reserved for prose.",
+      "A two-job color palette: blue acts, yellow highlights, everything else is structure.",
+      "Motion is small and motivated; every loop honors reduced-motion."
+    ],
+    "rules": [
+      { "name": "The Two-Job Palette Rule", "body": "Blue is the only action color and yellow is the only highlight color, used identically on every surface. Green and red are semantic-only. A third accent on a new screen is wrong — pull it back to ink, blue, or yellow.", "section": "colors" },
+      { "name": "The Inverting-Ink Rule", "body": "Borders and shadows are always --ink, never a fixed black. In dark mode --ink becomes light, so the entire brutalist structure survives the theme flip without per-component overrides.", "section": "colors" },
+      { "name": "The Mono-Brand Rule", "body": "JetBrains Mono carries 100% of the chrome — brand, nav, headings, buttons, labels, numbers. The reading sans is reserved exclusively for long-form prose and UI sentences.", "section": "typography" },
+      { "name": "The Hard-Shadow Rule", "body": "Every shadow is a solid offset of --ink with 0 blur and 0 spread. A blurred, soft, or semi-transparent drop shadow is forbidden. If it looks like a 2014 Material card, the blur radius is the bug.", "section": "elevation" },
+      { "name": "The No-Radius Rule", "body": "Corners are square (--radius: 0). Pills, rounded cards, and soft 8px corners are prohibited; the brutalist edge is part of the identity.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do wrap every surface in a 3px ink border + a hard offset shadow (Npx Npx 0 0 var(--ink)); that pairing IS the brand.",
+      "Do keep blue as the only action color and yellow as the only highlight, identically across every section.",
+      "Do set all chrome in JetBrains Mono, and all long-form reading in the sans.",
+      "Do keep corners square and shadows blur-free everywhere.",
+      "Do ship light + dark together, route shadows/borders through --ink, and give every animation a prefers-reduced-motion static fallback.",
+      "Do keep muted text (#555a63) dark enough for 4.5:1; bump toward ink if it's close."
+    ],
+    "donts": [
+      "Don't reintroduce the generic SaaS/shadcn-default look — soft slate cards, default shadcn blue, rounded elevation.",
+      "Don't use AI-slop landing tropes: per-section uppercase eyebrows, 01 / 02 / 03 numbered scaffolding, gradient text, glassmorphism, or identical icon-card grids.",
+      "Don't use blurred, soft, or semi-transparent drop shadows (the Hard-Shadow Rule).",
+      "Don't use side-stripe accent borders (border-left > 1px as a colored stripe) on cards, callouts, or alerts.",
+      "Don't let 'corporate playful' creep in — emoji-as-personality or a mascot that tries too hard.",
+      "Don't set prose in mono or chrome in the sans, and don't introduce a third accent color."
+    ]
+  }
+}

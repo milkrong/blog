@@ -1,0 +1,32 @@
+# Local development database only.
+# Runs Postgres in Docker and exposes it on localhost:5432 so `next dev`
+# (running on the host) can connect via DATABASE_URL.
+#
+#   docker compose -f docker-compose.dev.yml up -d
+#   npm run db:migrate
+#
+# Host port 5433 is used (not 5432) to avoid clashing with a native
+# Postgres that may already be running on 5432. Match DATABASE_URL in .env.
+#
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: blog_postgres_dev
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: blog
+    ports:
+      - "5433:5432"
+    volumes:
+      - blog_pgdata_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d blog"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  blog_pgdata_dev:
