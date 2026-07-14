@@ -9,7 +9,7 @@ import {
   postsToTags,
   tags,
 } from "../lib/schema";
-import { eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
@@ -22,6 +22,29 @@ import { initTRPC } from "@trpc/server";
 
 const t = initTRPC.create();
 
+async function getOrCreateCategoryByName(name: string) {
+  const trimmed = name.trim();
+  if (!trimmed) return null;
+  const existing = await db.select().from(categories).where(eq(categories.name, trimmed)).limit(1);
+  if (existing.length > 0) return existing[0];
+  const inserted = await db
+    .insert(categories)
+    .values({ name: trimmed, slug: trimmed })
+    .returning({ id: categories.id, name: categories.name, slug: categories.slug });
+  return inserted[0] as Category;
+}
+
+async function getDefaultCategory() {
+  const defaultName = "未分类";
+  const existing = await db.select().from(categories).where(eq(categories.name, defaultName)).limit(1);
+  if (existing.length > 0) return existing[0];
+  const inserted = await db
+    .insert(categories)
+    .values({ name: defaultName, slug: "uncategorized" })
+    .returning({ id: categories.id, name: categories.name, slug: categories.slug });
+  return inserted[0] as Category;
+}
+
 function extractFirstImageUrl(html: string | undefined | null): string | undefined {
   if (!html) return undefined;
   const imgMatch = html.match(/<img[^>]*src=["']([^"']+)["'][^>]*>/i);
@@ -30,41 +53,67 @@ function extractFirstImageUrl(html: string | undefined | null): string | undefin
 }
 
 export const appRouter = t.router({
-  posts: publicProcedure.query(
-    async (): Promise<
-      (Post & { category: Category | null; tags: Tag[] })[]
-    > => {
-      const cached = globalCache.get("posts_home");
-      if (cached) return cached as any;
-      // get posts
-      const basePosts: Post[] = await db
-        .select()
-        .from(posts)
-        .where(eq(posts.status, "published"));
-      // categories lookup
-      const categoriesMap: Record<number, Category> = {};
-      const catRows: Category[] = await db.select().from(categories);
-      catRows.forEach((c) => (categoriesMap[c.id as number] = c));
-      // tags per post
-      const ptRows = await db.select().from(postsToTags);
-      const tagRows: Tag[] = await db.select().from(tags);
-      const tagMap: Record<number, Tag> = {};
-      tagRows.forEach((t) => (tagMap[t.id as number] = t));
-      const postTagMap: Record<number, Tag[]> = {};
-      ptRows.forEach((pt: any) => {
-        if (!postTagMap[pt.post_id]) postTagMap[pt.post_id] = [];
-        const tg = tagMap[pt.tag_id];
-        if (tg) postTagMap[pt.post_id].push(tg);
-      });
-      const result = basePosts.map((p) => ({
-        ...p,
-        category: p.categoryId ? categoriesMap[p.categoryId] || null : null,
-        tags: postTagMap[p.id as number] || [],
-      }));
-      globalCache.set("posts_home", result, 60000);
-      return result;
-    }
-  ),
+  posts: publicProcedure
+    .input(z.object({ category: z.string().optional() }).optional())
+    .query(
+      async ({ input }): Promise<
+        (Post & { category: Category | null; tags: Tag[] })[]
+      > => {
+        const categoryFilter = input?.category?.trim();
+        const cacheKey = `posts_home_${categoryFilter || "all"}`;
+        const cached = globalCache.get(cacheKey);
+        if (cached) return cached as any;
+
+        let whereClause = eq(posts.status, "published");
+        let filterCategoryId: number | null = null;
+        if (categoryFilter && categoryFilter !== "all") {
+          const catRow = await db
+            .select()
+            .from(categories)
+            .where(or(eq(categories.slug, categoryFilter), eq(categories.name, categoryFilter)))
+            .limit(1);
+          if (catRow.length > 0) filterCategoryId = (catRow[0].id as number) || null;
+          if (filterCategoryId) {
+            whereClause = and(whereClause, eq(posts.categoryId, filterCategoryId));
+          } else {
+            // If category filter specified but not found, return empty
+            return [];
+          }
+        }
+
+        const basePosts: Post[] = await db
+          .select()
+          .from(posts)
+          .where(whereClause);
+
+        const categoriesMap: Record<number, Category> = {};
+        const catRows: Category[] = await db.select().from(categories);
+        catRows.forEach((c) => (categoriesMap[c.id as number] = c));
+
+        const ptRows = await db.select().from(postsToTags);
+        const tagRows: Tag[] = await db.select().from(tags);
+        const tagMap: Record<number, Tag> = {};
+        tagRows.forEach((t) => (tagMap[t.id as number] = t));
+        const postTagMap: Record<number, Tag[]> = {};
+        ptRows.forEach((pt: any) => {
+          if (!postTagMap[pt.post_id]) postTagMap[pt.post_id] = [];
+          const tg = tagMap[pt.tag_id];
+          if (tg) postTagMap[pt.post_id].push(tg);
+        });
+        const result = basePosts.map((p) => ({
+          ...p,
+          category: p.categoryId ? categoriesMap[p.categoryId] || null : null,
+          tags: postTagMap[p.id as number] || [],
+        }));
+        globalCache.set(cacheKey, result, 60000);
+        return result;
+      }
+    ),
+  listCategories: publicProcedure.query(async (): Promise<Category[]> => {
+    await getDefaultCategory();
+    const rows = await db.select().from(categories);
+    return rows;
+  }),
   authRegister: publicProcedure
     .input(
       z.object({
@@ -133,7 +182,7 @@ export const appRouter = t.router({
       }
 
       return await db.transaction(async (tx) => {
-        // category
+        // category with default
         let categoryId: number | null = null;
         if (category && category.trim().length > 0) {
           const existingCat = await tx
@@ -150,6 +199,9 @@ export const appRouter = t.router({
               .returning({ id: categories.id });
             categoryId = insertedCat[0].id as number;
           }
+        } else {
+          const defCat = await getDefaultCategory();
+          categoryId = defCat.id as number;
         }
 
         const derivedCover = cover || extractFirstImageUrl(content);
@@ -234,14 +286,24 @@ export const appRouter = t.router({
         content: z.string().optional(),
         cover: z.string().url().optional().or(z.literal("").transform(v => undefined)),
         status: z.enum(["draft", "published"]).optional(),
+        category: z.string().optional(),
       })
     )
     .mutation(async ({ input }) => {
-      const { id, ...rest } = input;
+      const { id, category, ...rest } = input;
 
       const existing = await db.query.posts.findFirst({ where: (p, { eq: eq2 }) => eq2(p.id, id) });
 
       const updateData: any = { ...rest };
+      if (category !== undefined) {
+        if (category && category.trim().length > 0) {
+          const cat = await getOrCreateCategoryByName(category);
+          updateData.categoryId = (cat as any)?.id as number;
+        } else {
+          const defCat = await getDefaultCategory();
+          updateData.categoryId = (defCat as any)?.id as number;
+        }
+      }
       if ((rest.cover === undefined || rest.cover === (undefined as any)) && rest.content !== undefined) {
         const currentCover = (existing as any)?.cover as string | null | undefined;
         if (!currentCover) {
