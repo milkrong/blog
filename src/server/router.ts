@@ -1,4 +1,4 @@
-import { db } from "../lib/db";
+import { getDb } from "../lib/db";
 import {
   Post,
   Category,
@@ -17,7 +17,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { globalCache } from "../lib/cache";
 import { publicProcedure, protectedProcedure, adminProcedure } from "../lib/trpc-middleware";
 import { generateToken, getUserFromToken } from "../lib/auth";
-import { REGISTRATION_SECRET, REGISTRATION_ENABLED } from "../lib/security";
+import { getRegistrationSecret, isRegistrationEnabled } from "../lib/security";
 import { initTRPC } from "@trpc/server";
 
 const t = initTRPC.create();
@@ -36,6 +36,7 @@ export const appRouter = t.router({
     > => {
       const cached = globalCache.get("posts_home");
       if (cached) return cached as any;
+      const db = await getDb();
       // get posts
       const basePosts: Post[] = await db
         .select()
@@ -75,16 +76,16 @@ export const appRouter = t.router({
     )
     .mutation(async ({ input }) => {
       const { email, password, secret } = input;
-      
-      // Check if registration is enabled
-      if (!REGISTRATION_ENABLED) {
+
+      if (!isRegistrationEnabled()) {
         throw new Error("Registration is currently disabled");
       }
-      
-      // Verify registration secret
-      if (secret !== REGISTRATION_SECRET) {
+
+      if (secret !== getRegistrationSecret()) {
         throw new Error("Invalid registration secret");
       }
+
+      const db = await getDb();
       
       // check existing
       const existing = await db.query.users.findFirst({
@@ -113,6 +114,7 @@ export const appRouter = t.router({
     )
     .mutation(async ({ input }) => {
       const { title, content, cover, category, tags: tagNames, status } = input;
+      const db = await getDb();
       const slugBase = title
         .trim()
         .toLowerCase()
@@ -219,6 +221,7 @@ export const appRouter = t.router({
     }),
   listAdminPosts: adminProcedure.query(async () => {
     try {
+      const db = await getDb();
       const rows = await db.select().from(posts);
       return rows;
     } catch (err) {
@@ -238,6 +241,7 @@ export const appRouter = t.router({
     )
     .mutation(async ({ input }) => {
       const { id, ...rest } = input;
+      const db = await getDb();
 
       const existing = await db.query.posts.findFirst({ where: (p, { eq: eq2 }) => eq2(p.id, id) });
 
@@ -265,6 +269,7 @@ export const appRouter = t.router({
   updatePostStatus: adminProcedure
     .input(z.object({ id: z.number(), status: z.enum(["draft", "published"]) }))
     .mutation(async ({ input }) => {
+      const db = await getDb();
       const updated = await db
         .update(posts)
         .set({ status: input.status })
@@ -281,6 +286,7 @@ export const appRouter = t.router({
     )
     .mutation(async ({ input }) => {
       const { email, password } = input;
+      const db = await getDb();
       const user = await db.query.users.findFirst({
         where: (u, { eq }) => eq(u.email, email),
       });

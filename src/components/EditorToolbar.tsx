@@ -10,15 +10,17 @@ type EditorToolbarProps = {
 };
 
 export function EditorToolbar({ editor }: EditorToolbarProps) {
-    if (!editor) return null;
-
-    const buttonCls = (active: boolean) => (active ? "!bg-yellow-200" : "");
-
     const getUploadUrl = trpc.r2GetUploadUrl.useMutation();
     const [uploading, setUploading] = React.useState(false);
     const [uploadProgress, setUploadProgress] = React.useState(0);
     const [uploadError, setUploadError] = React.useState<string | null>(null);
     const lastFileRef = React.useRef<File | null>(null);
+    const [imgModalOpen, setImgModalOpen] = React.useState(false);
+    const [imgUrl, setImgUrl] = React.useState("");
+
+    if (!editor) return null;
+
+    const buttonCls = (active: boolean) => (active ? "!bg-yellow-200" : "");
 
     const MAX_MB = 5;
     const validateFile = (file: File) => {
@@ -64,9 +66,6 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
             setUploading(false);
         }
     };
-
-    const [imgModalOpen, setImgModalOpen] = React.useState(false);
-    const [imgUrl, setImgUrl] = React.useState("");
 
     return (
         <>

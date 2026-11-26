@@ -2,9 +2,7 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import Link from "next/link";
 import Layout from "../../components/Layout";
 import Tag from "../../components/Tag";
-import { remark } from "remark";
-import html from "remark-html";
-import { db } from "../../lib/db";
+import { getDb } from "../../lib/db";
 import { posts, categories, postsToTags, tags } from "../../lib/schema";
 import { eq, inArray } from "drizzle-orm";
 
@@ -86,6 +84,7 @@ export default function PostPage({ post }: Props) {
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   const slug = params?.slug as string;
+  const db = await getDb();
   // Fetch from database only (markdown removed)
   const dbPost = await db.query.posts.findFirst({
     where: (p, { eq }) => eq(p.slug, slug),
@@ -119,7 +118,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
         tagNames = tagRows.map((t) => t.name as string);
       }
     }
-    // content: stored content now already HTML (TipTap). Fallback: if plain text, run remark.
+    // Content is HTML produced by the TipTap editor.
     let htmlContent = "";
     if (dbPost.content) {
       htmlContent = dbPost.content as string;

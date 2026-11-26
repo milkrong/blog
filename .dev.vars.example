@@ -1,0 +1,13 @@
+# Copy to .dev.vars for `pnpm preview` / wrangler. Do not commit .dev.vars.
+# Selects which Next .env* file OpenNext loads in the Workers runtime.
+NEXTJS_ENV=development
+
+# Local Hyperdrive target (binding name HYPERDRIVE). `pnpm dev` falls back to DATABASE_URL
+# when this is unset. Preview uses it when the placeholder Hyperdrive id is simulated locally.
+# CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE=postgresql://postgres:postgres@localhost:5432/postgres
+
+# Optional local secrets. Prefer a gitignored .env.local for `pnpm dev`.
+# JWT_SECRET=
+# REGISTRATION_SECRET=
+# R2_ACCESS_KEY_ID=
+# R2_SECRET_ACCESS_KEY=
