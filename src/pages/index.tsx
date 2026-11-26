@@ -87,7 +87,7 @@ export default function Home() {
 export const getStaticProps: GetStaticProps = async () => {
   const queryClient = new QueryClient();
   if (process.env.NEXT_SKIP_DB === "1") {
-    // Skip DB prefetch during Docker image build
+    // Builds have no database. ISR refetches after deploy; the client also queries /api/trpc.
   } else {
     // prefetch via direct call to router instead of SSG helpers to avoid version mismatch
     const caller = appRouter.createCaller({});

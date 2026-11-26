@@ -41,7 +41,7 @@ Create a `.env.local` file with these required variables:
 # REQUIRED - Generate a strong secret (64+ characters)
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 
-# REQUIRED - Your database connection
+# Local database and drizzle-kit. Production uses the HYPERDRIVE binding instead.
 DATABASE_URL=postgresql://username:password@localhost:5432/blog_db
 
 # Optional - For file uploads

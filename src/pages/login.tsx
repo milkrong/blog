@@ -4,7 +4,7 @@ import Link from "next/link";
 import { trpc } from "../utils/trpc";
 import { PixelButton } from "../components/PixelButton";
 import { PixelInput } from "../components/PixelInput";
-import { REGISTRATION_ENABLED } from "../lib/security";
+import { isRegistrationEnabled } from "../lib/security";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -188,7 +188,7 @@ export default function LoginPage() {
             </PixelButton>
           </form>
 
-          {REGISTRATION_ENABLED && (
+          {isRegistrationEnabled() && (
             <div className="mt-5 text-center font-mono text-sm">
               {mode === "login" ? (
                 <button

@@ -12,3 +12,10 @@ node_modules/
 .playwright-mcp
 
 .env
+.env.*
+!.env.example
+
+.open-next
+.wrangler
+.dev.vars
+cloudflare-env.d.ts

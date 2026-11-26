@@ -1,40 +1,54 @@
-// Security configuration and validation
+// Security configuration and validation.
+// Read env inside functions. Module scope can run before Workers copies
+// secrets onto process.env, which would freeze empty values for the isolate.
+
+function readEnv(name: string): string | undefined {
+  const value = process.env[name];
+  return typeof value === "string" && value.length > 0 ? value : undefined;
+}
 
 export function validateEnvironment() {
-  const requiredEnvVars = [
-    'JWT_SECRET',
-    'DATABASE_URL'
-  ];
+  const jwtSecret = readEnv("JWT_SECRET");
 
-  const missing = requiredEnvVars.filter(envVar => !process.env[envVar]);
-  
-  if (missing.length > 0) {
-    throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+  if (!jwtSecret) {
+    throw new Error("Missing required environment variables: JWT_SECRET");
   }
 
-  // Validate JWT secret strength
-  if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
-    throw new Error('JWT_SECRET must be at least 32 characters long');
+  if (jwtSecret.length < 32) {
+    throw new Error("JWT_SECRET must be at least 32 characters long");
   }
 
-  // Warn about default JWT secret
-  if (process.env.JWT_SECRET === 'your-super-secret-jwt-key-change-this-in-production') {
-    console.warn('⚠️  WARNING: Using default JWT_SECRET. Change this in production!');
+  if (jwtSecret === "your-super-secret-jwt-key-change-this-in-production") {
+    console.warn("⚠️  WARNING: Using default JWT_SECRET. Change this in production!");
   }
 }
 
+export function getJwtSecret(): string {
+  validateEnvironment();
+  return readEnv("JWT_SECRET") as string;
+}
+
 export function generateSecureJWTSecret(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-  let result = '';
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+  let result = "";
   for (let i = 0; i < 64; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return result;
 }
 
-// Registration security
-export const REGISTRATION_SECRET = process.env.REGISTRATION_SECRET || 'admin-registration-secret-2024';
-export const REGISTRATION_ENABLED = process.env.REGISTRATION_ENABLED !== 'false'; // Default to true, set to 'false' to disable
+// Known insecure fallback. Registration stays open to anyone who knows it
+// until REGISTRATION_SECRET is set with `wrangler secret put`.
+const DEFAULT_REGISTRATION_SECRET = "admin-registration-secret-2024";
+
+export function getRegistrationSecret(): string {
+  return readEnv("REGISTRATION_SECRET") ?? DEFAULT_REGISTRATION_SECRET;
+}
+
+// Enabled unless the value is exactly "false".
+export function isRegistrationEnabled(): boolean {
+  return readEnv("REGISTRATION_ENABLED") !== "false";
+}
 
 // Rate limiting configuration
 export const RATE_LIMITS = {
@@ -46,9 +60,9 @@ export const RATE_LIMITS = {
 
 // Security headers
 export const SECURITY_HEADERS = {
-  'X-Content-Type-Options': 'nosniff',
-  'X-Frame-Options': 'DENY',
-  'X-XSS-Protection': '1; mode=block',
-  'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "X-XSS-Protection": "1; mode=block",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
 } as const;

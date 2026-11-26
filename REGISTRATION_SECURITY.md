@@ -42,15 +42,9 @@ REGISTRATION_SECRET=your-registration-secret-key-2024
 REGISTRATION_ENABLED=true
 ```
 
-### 🐳 **Docker Configuration**
+### Cloudflare
 
-For Docker, add to your `.env` file:
-
-```bash
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-REGISTRATION_SECRET=your-registration-secret-key-2024
-REGISTRATION_ENABLED=true
-```
+For the Worker, set `REGISTRATION_ENABLED` in `wrangler.jsonc` `vars` and store the secret with `npx wrangler secret put REGISTRATION_SECRET`. If that secret is missing, the server falls back to the hardcoded value `admin-registration-secret-2024` and registration stays enabled. See `README.md`.
 
 ### 📋 **Setup Instructions**
 
@@ -160,6 +154,6 @@ REGISTRATION_SECRET=secret
 - `src/lib/security.ts` - Registration security configuration
 - `src/server/router.ts` - Registration endpoint with secret validation
 - `src/pages/login.tsx` - Updated UI with secret field
-- `docker-compose.yml` - Added environment variables
+- `wrangler.jsonc` - `REGISTRATION_ENABLED` var
 
 Your registration system is now secure and flexible! 🎉
