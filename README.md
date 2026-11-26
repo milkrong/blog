@@ -105,7 +105,7 @@ pnpm db:migrate
 
 ## Layout
 
-- `src/lib/db.ts` opens a postgres.js client per request from `env.HYPERDRIVE.connectionString`, with `prepare: true`. Local fallback is `DATABASE_URL`.
+- `src/lib/db.ts` uses `env.HYPERDRIVE.connectionString` with `prepare: true`. On Workers that client is per request and closes after it is idle. `pnpm dev` and `next start` reuse one pool for `DATABASE_URL`.
 - `src/pages/api/trpc/[trpc].ts` stays a Node Pages API route. Do not set `runtime = "edge"`.
 - `open-next.config.ts` stores ISR in R2 and dedupes revalidation with a Durable Object queue. There is no tag cache.
 - Presigned uploads stay on `@aws-sdk/client-s3` in `r2GetUploadUrl`.
